@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Shanti Recovery — Welcome</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    /* —— Brand palette, from the Shanti logo —— */
+    --rose:      #C8A297;  /* lotus mark */
+    --rose-deep: #A9786B;
+    --rose-soft: #E4CDC4;
+    --rose-wash: #F8EFEA;
+    --charcoal:  #333132;  /* "SHANTI" wordmark + ink */
+    --ink-soft:  #6E6663;
+    --cream:     #FAF5F1;  /* canvas */
+    --line:      #EADFD8;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  body{
+    font-family:"Inter", system-ui, sans-serif;
+    background:#e6ddd6;
+    min-height:100vh;
+    display:grid;
+    place-items:center;
+    padding:32px;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* —— Phone frame (393 × 853, matching the Figma frame) —— */
+  .frame{
+    width:393px;
+    height:853px;
+    background:#ffffff;
+    border-radius:40px;
+    overflow:hidden;
+    box-shadow:0 40px 90px -40px rgba(86,60,52,.45), 0 0 0 1px rgba(86,60,52,.05);
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* div#1:7 — warm canvas, centers the content block */
+  .canvas{
+    flex:1;
+    background:
+      radial-gradient(120% 70% at 50% 0%, #ffffff 0%, var(--cream) 55%, var(--rose-wash) 100%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+  }
+
+  /* Container #1:8 */
+  .content{ width:361px; }
+
+  /* —— Brand block —— */
+  .brand{ text-align:center; margin-bottom:48px; }
+  .logo-circle{
+    width:96px;
+    height:96px;
+    margin:0 auto 24px;
+    background:var(--charcoal);
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    box-shadow:0 16px 30px -14px rgba(51,49,50,.55);
+  }
+  .logo-circle svg{ width:52px; height:auto; display:block; }
+  .brand h1{
+    font-weight:600;
+    font-size:30px;
+    line-height:36px;
+    letter-spacing:0.4px;
+    color:var(--charcoal);
+  }
+  .brand .tag{
+    margin-top:8px;
+    font-weight:700;
+    font-size:10px;
+    letter-spacing:0.42em;
+    text-transform:uppercase;
+    color:var(--rose);
+    padding-left:0.42em;
+  }
+  .brand p{
+    margin-top:14px;
+    font-weight:400;
+    font-size:16px;
+    line-height:24px;
+    letter-spacing:-0.31px;
+    color:var(--rose-deep);
+  }
+
+  /* —— Buttons —— */
+  .actions{ display:flex; flex-direction:column; gap:16px; }
+  .btn{
+    height:71px;
+    border-radius:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    font-weight:600;
+    font-size:18px;
+    letter-spacing:-0.44px;
+    cursor:pointer;
+    border:1.56px solid transparent;
+    transition:transform .12s ease, box-shadow .12s ease, background .15s ease;
+  }
+  .btn svg{ width:24px; height:24px; }
+  .btn-primary{
+    background:var(--charcoal);
+    border-color:var(--charcoal);
+    color:#ffffff;
+  }
+  .btn-primary:hover{ background:#211f20; transform:translateY(-1px); box-shadow:0 14px 26px -12px rgba(51,49,50,.6); }
+  .btn-secondary{
+    background:#ffffff;
+    border-color:var(--rose-soft);
+    color:var(--charcoal);
+  }
+  .btn-secondary:hover{ background:var(--rose-wash); transform:translateY(-1px); box-shadow:0 12px 24px -14px rgba(169,120,107,.4); }
+  .btn:active{ transform:translateY(0); }
+
+  /* —— Privacy note —— */
+  .privacy{
+    margin-top:32px;
+    background:var(--rose-wash);
+    border:1.56px solid var(--rose-soft);
+    border-radius:16px;
+    padding:18px;
+    text-align:center;
+  }
+  .privacy p{
+    font-weight:400;
+    font-size:12px;
+    line-height:16px;
+    color:var(--ink-soft);
+    max-width:293px;
+    margin:0 auto;
+  }
+</style>
+</head>
+<body>
+
+  <div class="frame">
+    <div class="canvas">
+      <div class="content">
+
+        <!-- Brand -->
+        <div class="brand">
+          <div class="logo-circle">
+            <!-- Shanti lotus mark (from logo), tinted rose on charcoal -->
+            <svg viewBox="0 0 93 54" fill="var(--rose)" xmlns="http://www.w3.org/2000/svg" aria-label="Shanti lotus">
+              <path d="M92.6734 26.327C91.7215 26.0125 90.7347 25.6979 89.7478 25.4589C82.7619 23.7091 75.4112 24.0329 68.6094 26.39C61.8075 28.7471 55.8544 33.0336 51.4898 38.7168C50.0019 36.4746 48.9704 33.9657 48.4532 31.3314C48.3961 31.0168 48.3389 30.7023 48.2913 30.3877C48.1993 29.7587 48.1327 29.0918 48.0946 28.4219C48.0946 28.1073 48.0756 27.7928 48.0756 27.4594V27.3965C48.0805 23.6137 49.1299 19.9045 51.11 16.6709C53.09 13.4373 55.9253 10.8026 59.3083 9.05249C60.1825 8.59395 61.0905 8.20175 62.0245 7.87925C64.101 7.14375 66.2835 6.74442 68.4881 6.69658C68.8415 8.09006 69.0185 9.52176 69.0148 10.9586C69.023 14.4987 67.9548 17.9592 65.9496 20.8886C65.9306 20.9075 65.9211 20.9264 65.902 20.9452C65.7677 21.1609 65.6936 21.408 65.6872 21.6614C65.6808 21.9147 65.7424 22.1652 65.8657 22.3872C65.989 22.6092 66.1695 22.7948 66.3889 22.925C66.6082 23.0552 66.8585 23.1253 67.1141 23.1282C67.3259 23.1286 67.5351 23.083 67.727 22.9944C67.9189 22.9058 68.0889 22.7764 68.2247 22.6155C68.2305 22.6109 68.2351 22.6052 68.2384 22.5987C68.2417 22.5921 68.2435 22.585 68.2438 22.5777C68.2724 22.5422 68.2979 22.5043 68.3199 22.4645C68.3441 22.4436 68.3636 22.4178 68.377 22.389C70.661 19.0099 71.8763 15.0323 71.8674 10.9649C71.8727 9.58294 71.7334 8.20417 71.4518 6.85071C71.2542 5.85752 70.9772 4.88147 70.6236 3.93178C70.0778 3.8846 69.5225 3.86572 68.9577 3.86572C68.4786 3.86572 68.0058 3.8846 67.5298 3.9129C65.4419 4.03521 63.3795 4.43076 61.3962 5.08928C60.4905 5.39101 59.6046 5.74817 58.7435 6.15872C55.8234 7.54637 53.2198 9.51017 51.0919 11.9299C48.9641 14.3496 47.3568 17.1744 46.3684 20.2312C45.3766 17.1729 43.7655 14.3474 41.6338 11.9277C39.5021 9.50793 36.8947 7.5449 33.9712 6.15872C33.1099 5.74871 32.224 5.39156 31.3185 5.08928C29.3322 4.42991 27.2665 4.03434 25.1753 3.9129C24.7057 3.8846 24.2234 3.86572 23.7538 3.86572C23.189 3.86572 22.6337 3.8846 22.0911 3.93178C21.7299 4.88083 21.4455 5.8569 21.2407 6.85071C20.9554 8.2059 20.8129 9.5868 20.8155 10.9712C20.8093 15.0894 22.0591 19.1133 24.4011 22.5148C24.5319 22.7094 24.7094 22.8687 24.9176 22.9785C25.1259 23.0883 25.3583 23.1451 25.5942 23.1439C25.9746 23.1414 26.3386 22.9898 26.6067 22.7223C26.8748 22.4548 27.0253 22.093 27.0253 21.7159C27.027 21.455 26.952 21.1992 26.8095 20.9798C26.7808 20.9444 26.7554 20.9065 26.7333 20.8666C25.3368 18.8138 24.3907 16.4932 23.9561 14.0549C23.5216 11.6167 23.6083 9.1152 24.2107 6.71231C26.4115 6.75369 28.591 7.14776 30.6648 7.87925C31.6027 8.20231 32.5148 8.59448 33.3937 9.05249C36.7778 10.8035 39.6135 13.4398 41.5931 16.6752C43.5728 19.9107 44.6207 23.6218 44.6232 27.4059V27.4594C44.6232 27.7739 44.6232 28.1136 44.5947 28.4313C44.5681 29.0895 44.5056 29.7457 44.4075 30.3972C44.3599 30.7117 44.3059 31.0263 44.2488 31.3408C43.7271 33.973 42.6912 36.4786 41.1995 38.7168C36.8354 33.0338 30.8828 28.7475 24.0815 26.3904C17.2802 24.0332 9.9301 23.7093 2.94463 25.4589C1.9578 25.7105 0.977313 25.9999 0.0190384 26.327C0.0190384 26.6793 0 27.0347 0 27.3902C0 28.0413 0.0190385 28.6829 0.0761542 29.3183C0.455421 33.8504 2.1514 38.1764 4.95892 41.7731C7.76644 45.3697 11.5652 48.0829 15.8956 49.5843C20.2261 51.0857 24.9026 51.3111 29.3596 50.2331C33.8165 49.1552 37.8629 46.8201 41.0091 43.5103C42.7556 46.3979 44.0552 49.5289 44.8644 52.7987C44.9301 53.1368 45.1125 53.4416 45.3803 53.6609C45.6481 53.8801 45.9846 54 46.332 54C46.6793 54 47.0158 53.8801 47.2836 53.6609C47.5514 53.4416 47.7338 53.1368 47.7995 52.7987C48.6083 49.5262 49.9136 46.3944 51.6707 43.5103C54.8169 46.8201 58.8633 49.1552 63.3202 50.2331C67.7771 51.3111 72.4537 51.0857 76.7841 49.5843C81.1146 48.0829 84.9133 45.3697 87.7209 41.7731C90.5284 38.1764 92.2243 33.8504 92.6036 29.3183C92.6607 28.6892 92.6798 28.0413 92.6798 27.3902C92.6925 27.0347 92.6829 26.6667 92.6734 26.327ZM23.7474 48.09C18.3904 48.0839 13.2401 46.0394 9.35959 42.3783C5.47912 38.7172 3.16464 33.7191 2.89386 28.4156C5.85454 27.5913 8.9159 27.1763 11.9911 27.1826C17.3421 27.1818 22.6169 28.4399 27.3819 30.8535C32.1468 33.2672 36.2658 36.7674 39.4003 41.0664C37.4472 43.2756 35.04 45.0453 32.3404 46.2567C29.6407 47.4681 26.7108 48.0932 23.7474 48.09ZM46.3621 47.9296C45.465 45.577 44.3273 43.3215 42.9669 41.1985C44.4507 39.1801 45.5971 36.9381 46.3621 34.5585C47.1255 36.9387 48.2721 39.1809 49.7573 41.1985C48.3852 43.3174 47.2419 45.5735 46.3462 47.9296H46.3621ZM68.9736 48.09C66.0091 48.0915 63.0784 47.4656 60.3774 46.2544C57.6764 45.0432 55.2673 43.2744 53.3112 41.0664C56.4489 36.7677 60.5704 33.268 65.3372 30.8545C70.1041 28.441 75.3804 27.1826 80.7331 27.1826C83.8073 27.1764 86.8676 27.5913 89.8272 28.4156C89.5562 33.7218 87.2395 38.7222 83.3557 42.3837C79.4718 46.0452 74.3176 48.088 68.9577 48.09H68.9736Z"/>
+              <path d="M46.3463 7.73768C48.5018 7.73768 50.2492 6.00555 50.2492 3.86884C50.2492 1.73214 48.5018 0 46.3463 0C44.1908 0 42.4434 1.73214 42.4434 3.86884C42.4434 6.00555 44.1908 7.73768 46.3463 7.73768Z"/>
+            </svg>
+          </div>
+          <h1>Shanti Recovery</h1>
+          <div class="tag">Recovery Wellness</div>
+          <p>Your journey to recovery starts here</p>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+          <button class="btn btn-primary">
+            <!-- UserPlus icon -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <line x1="19" y1="8" x2="19" y2="14"/>
+              <line x1="22" y1="11" x2="16" y2="11"/>
+            </svg>
+            Create New Account
+          </button>
+
+          <button class="btn btn-secondary">
+            <!-- LogIn icon -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+              <polyline points="10 17 15 12 10 7"/>
+              <line x1="15" y1="12" x2="3" y2="12"/>
+            </svg>
+            Sign In
+          </button>
+        </div>
+
+        <!-- Privacy note -->
+        <div class="privacy">
+          <p>Your privacy matters. All your data is encrypted and secure.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

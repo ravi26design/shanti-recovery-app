@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Shanti Recovery — Interactive Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --rose:#C8A297; --rose-deep:#A9786B; --rose-soft:#E4CDC4; --rose-tint:#F1E2DB; --rose-wash:#F8EFEA;
+    --charcoal:#333132; --ink:#2B2A2B; --ink-soft:#6E6663; --ink-faint:#A59B96;
+    --sage:#8E9E86; --sage-soft:#DCE3D6; --cream:#FAF5F1; --sand:#F1E8E1; --line:#EADFD8; --gold:#D8A24A;
+    --shadow-sm:0 2px 8px rgba(86,60,52,.06);
+    --shadow:0 14px 40px -18px rgba(86,60,52,.35);
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  body{
+    font-family:"Inter",system-ui,sans-serif; color:var(--ink);
+    background:radial-gradient(900px 600px at 30% 0%, #efe5dd, #ddd2ca);
+    min-height:100vh; display:flex; flex-direction:column; align-items:center; gap:18px;
+    padding:34px 16px; -webkit-font-smoothing:antialiased;
+  }
+  .topnote{ text-align:center; color:#7c6f68; }
+  .topnote b{ color:var(--charcoal); font-weight:700; letter-spacing:.02em; }
+  .topnote span{ display:block; font-size:12.5px; margin-top:4px; }
+
+  /* —— Phone —— */
+  .phone{
+    position:relative; width:393px; height:853px; border-radius:46px; background:#211f20;
+    padding:11px; box-shadow:0 50px 100px -40px rgba(40,28,24,.7);
+  }
+  .notch{ position:absolute; top:11px; left:50%; transform:translateX(-50%); z-index:50; width:128px; height:28px; background:#211f20; border-radius:0 0 18px 18px; }
+  .viewport{ position:relative; width:100%; height:100%; border-radius:36px; overflow:hidden; background:var(--cream); }
+
+  .screen{
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    opacity:0; visibility:hidden; transform:translateX(14px);
+    transition:opacity .32s ease, transform .32s ease, visibility .32s;
+  }
+  .screen.active{ opacity:1; visibility:visible; transform:none; }
+  .scrollarea{ flex:1; overflow-y:auto; overflow-x:hidden; }
+  .scrollarea::-webkit-scrollbar{ width:0; }
+
+  /* status bar */
+  .status{ height:46px; flex:none; display:flex; align-items:flex-end; justify-content:space-between; padding:0 26px 6px; font-size:13px; font-weight:800; position:relative; z-index:5; }
+  .status .r{ letter-spacing:.5px; }
+  .status.light{ color:#fff; }
+
+  /* tab bar */
+  .tabbar{ flex:none; height:78px; background:rgba(255,255,255,.93); backdrop-filter:blur(14px); border-top:1px solid var(--line); display:flex; align-items:center; justify-content:space-around; padding-bottom:10px; }
+  .tab{ display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--ink-faint); font-size:10px; font-weight:700; cursor:pointer; flex:1; }
+  .tab svg{ width:23px; height:23px; }
+  .tab.active{ color:var(--rose-deep); }
+  .tab.center{ position:relative; }
+  .tab.center .fab{ width:56px; height:56px; border-radius:50%; background:var(--charcoal); color:#fff; display:grid; place-items:center; margin-top:-28px; box-shadow:0 12px 24px -8px rgba(51,49,50,.6); border:4px solid var(--cream); }
+
+  /* atoms */
+  .pad{ padding:6px 24px 26px; }
+  .btn{ font-weight:600; font-size:17px; border:1.56px solid transparent; border-radius:16px; padding:17px 22px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:11px; width:100%; transition:transform .12s, box-shadow .12s, background .15s; }
+  .btn svg{ width:22px; height:22px; }
+  .btn:active{ transform:scale(.985); }
+  .btn-primary{ background:var(--charcoal); color:#fff; border-color:var(--charcoal); box-shadow:0 12px 26px -12px rgba(51,49,50,.7); }
+  .btn-rose{ background:var(--rose); color:#fff; box-shadow:0 12px 26px -12px var(--rose-deep); }
+  .btn-secondary{ background:#fff; color:var(--charcoal); border-color:var(--rose-soft); }
+  .btn-ghost{ background:var(--rose-wash); color:var(--rose-deep); }
+  .pill{ display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:999px; font-size:12.5px; font-weight:700; cursor:pointer; }
+  .card{ background:#fff; border:1px solid var(--line); border-radius:20px; padding:18px; box-shadow:var(--shadow-sm); }
+  .soft-title{ font-size:12px; font-weight:800; letter-spacing:.14em; color:var(--ink-soft); text-transform:uppercase; }
+  .back{ font-size:24px; color:var(--ink-faint); cursor:pointer; width:30px; line-height:1; }
+  .h1{ font-weight:600; font-size:27px; letter-spacing:-.01em; color:var(--charcoal); }
+  .greet small{ color:var(--ink-soft); font-weight:700; font-size:12.5px; letter-spacing:.04em; text-transform:uppercase; }
+  .avatar{ width:46px; height:46px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--rose-soft); }
+  .field{ background:#fff; border:1.5px solid var(--line); border-radius:15px; padding:13px 16px; }
+  .field .lab{ font-size:11px; color:var(--ink-faint); font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+  .field input{ border:0; outline:0; font-family:inherit; font-size:15px; width:100%; background:transparent; color:var(--ink); margin-top:2px; }
+  .progress-track{ height:8px; border-radius:99px; background:var(--sand); overflow:hidden; }
+  .progress-track > i{ display:block; height:100%; border-radius:99px; background:linear-gradient(90deg,var(--rose),var(--rose-deep)); }
+  .quick{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .qi{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:15px; display:flex; gap:11px; align-items:center; box-shadow:var(--shadow-sm); cursor:pointer; }
+  .qi .ic{ width:40px; height:40px; border-radius:12px; display:grid; place-items:center; flex:none; font-size:19px; }
+  .qi b{ font-size:13.5px; display:block; } .qi span{ font-size:11px; color:var(--ink-faint); }
+  .listrow{ display:flex; align-items:center; gap:14px; padding:14px 0; border-top:1px solid var(--line); cursor:pointer; }
+  .listrow:first-child{ border-top:0; }
+  .listrow .ic{ width:42px; height:42px; border-radius:13px; display:grid; place-items:center; flex:none; font-size:18px; }
+  .listrow .tx{ flex:1; } .listrow .tx b{ font-size:14.5px; display:block; } .listrow .tx span{ font-size:12px; color:var(--ink-faint); }
+  .moodset{ display:flex; justify-content:space-between; gap:8px; }
+  .moodset .m{ flex:1; aspect-ratio:1; border-radius:14px; background:#fff; border:1px solid var(--line); display:grid; place-items:center; font-size:24px; cursor:pointer; transition:.15s; }
+  .moodset .m.sel{ background:var(--rose-tint); border-color:var(--rose-soft); transform:scale(1.06); box-shadow:var(--shadow-sm); }
+  .seg{ display:flex; background:var(--sand); border-radius:13px; padding:4px; }
+  .seg b{ flex:1; text-align:center; font-size:12.5px; font-weight:800; padding:9px; border-radius:10px; color:var(--ink-soft); cursor:pointer; }
+  .seg b.on{ background:#fff; color:var(--charcoal); box-shadow:var(--shadow-sm); }
+  .post{ background:#fff; border:1px solid var(--line); border-radius:20px; padding:16px; box-shadow:var(--shadow-sm); }
+  .post .ph{ display:flex; align-items:center; gap:11px; margin-bottom:11px; }
+  .post .ph img{ width:38px; height:38px; border-radius:50%; }
+  .post .ph b{ font-size:13.5px; display:block; } .post .ph span{ font-size:11px; color:var(--ink-faint); }
+  .post .actions{ display:flex; gap:18px; margin-top:13px; color:var(--ink-faint); font-size:12px; font-weight:700; }
+  .dots{ display:flex; gap:7px; justify-content:center; }
+  .dots i{ width:7px; height:7px; border-radius:99px; background:var(--rose-soft); }
+  .dots i.on{ width:22px; background:var(--rose-deep); }
+  .ring-ctr{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .lotus{ display:block; }
+
+  .map{ max-width:393px; font-size:11.5px; color:#8a7d76; text-align:center; line-height:1.7; }
+  .map b{ color:var(--rose-deep); }
+</style>
+</head>
+<body>
+
+  <div class="topnote"><b>SHANTI · Interactive Prototype</b><span>Tap buttons, tabs, list rows &amp; the lotus to move through the app</span></div>
+
+  <!-- lotus def -->
+  <svg width="0" height="0" style="position:absolute"><defs>
+    <g id="lotus">
+      <path d="M92.6734 26.327C91.7215 26.0125 90.7347 25.6979 89.7478 25.4589C82.7619 23.7091 75.4112 24.0329 68.6094 26.39C61.8075 28.7471 55.8544 33.0336 51.4898 38.7168C50.0019 36.4746 48.9704 33.9657 48.4532 31.3314C48.3961 31.0168 48.3389 30.7023 48.2913 30.3877C48.1993 29.7587 48.1327 29.0918 48.0946 28.4219C48.0946 28.1073 48.0756 27.7928 48.0756 27.4594V27.3965C48.0805 23.6137 49.1299 19.9045 51.11 16.6709C53.09 13.4373 55.9253 10.8026 59.3083 9.05249C60.1825 8.59395 61.0905 8.20175 62.0245 7.87925C64.101 7.14375 66.2835 6.74442 68.4881 6.69658C68.8415 8.09006 69.0185 9.52176 69.0148 10.9586C69.023 14.4987 67.9548 17.9592 65.9496 20.8886C65.9306 20.9075 65.9211 20.9264 65.902 20.9452C65.7677 21.1609 65.6936 21.408 65.6872 21.6614C65.6808 21.9147 65.7424 22.1652 65.8657 22.3872C65.989 22.6092 66.1695 22.7948 66.3889 22.925C66.6082 23.0552 66.8585 23.1253 67.1141 23.1282C67.3259 23.1286 67.5351 23.083 67.727 22.9944C67.9189 22.9058 68.0889 22.7764 68.2247 22.6155C68.2305 22.6109 68.2351 22.6052 68.2384 22.5987C68.2417 22.5921 68.2435 22.585 68.2438 22.5777C68.2724 22.5422 68.2979 22.5043 68.3199 22.4645C68.3441 22.4436 68.3636 22.4178 68.377 22.389C70.661 19.0099 71.8763 15.0323 71.8674 10.9649C71.8727 9.58294 71.7334 8.20417 71.4518 6.85071C71.2542 5.85752 70.9772 4.88147 70.6236 3.93178C70.0778 3.8846 69.5225 3.86572 68.9577 3.86572C68.4786 3.86572 68.0058 3.8846 67.5298 3.9129C65.4419 4.03521 63.3795 4.43076 61.3962 5.08928C60.4905 5.39101 59.6046 5.74817 58.7435 6.15872C55.8234 7.54637 53.2198 9.51017 51.0919 11.9299C48.9641 14.3496 47.3568 17.1744 46.3684 20.2312C45.3766 17.1729 43.7655 14.3474 41.6338 11.9277C39.5021 9.50793 36.8947 7.5449 33.9712 6.15872C33.1099 5.74871 32.224 5.39156 31.3185 5.08928C29.3322 4.42991 27.2665 4.03434 25.1753 3.9129C24.7057 3.8846 24.2234 3.86572 23.7538 3.86572C23.189 3.86572 22.6337 3.8846 22.0911 3.93178C21.7299 4.88083 21.4455 5.8569 21.2407 6.85071C20.9554 8.2059 20.8129 9.5868 20.8155 10.9712C20.8093 15.0894 22.0591 19.1133 24.4011 22.5148C24.5319 22.7094 24.7094 22.8687 24.9176 22.9785C25.1259 23.0883 25.3583 23.1451 25.5942 23.1439C25.9746 23.1414 26.3386 22.9898 26.6067 22.7223C26.8748 22.4548 27.0253 22.093 27.0253 21.7159C27.027 21.455 26.952 21.1992 26.8095 20.9798C26.7808 20.9444 26.7554 20.9065 26.7333 20.8666C25.3368 18.8138 24.3907 16.4932 23.9561 14.0549C23.5216 11.6167 23.6083 9.1152 24.2107 6.71231C26.4115 6.75369 28.591 7.14776 30.6648 7.87925C31.6027 8.20231 32.5148 8.59448 33.3937 9.05249C36.7778 10.8035 39.6135 13.4398 41.5931 16.6752C43.5728 19.9107 44.6207 23.6218 44.6232 27.4059V27.4594C44.6232 27.7739 44.6232 28.1136 44.5947 28.4313C44.5681 29.0895 44.5056 29.7457 44.4075 30.3972C44.3599 30.7117 44.3059 31.0263 44.2488 31.3408C43.7271 33.973 42.6912 36.4786 41.1995 38.7168C36.8354 33.0338 30.8828 28.7475 24.0815 26.3904C17.2802 24.0332 9.9301 23.7093 2.94463 25.4589C1.9578 25.7105 0.977313 25.9999 0.0190384 26.327C0.0190384 26.6793 0 27.0347 0 27.3902C0 28.0413 0.0190385 28.6829 0.0761542 29.3183C0.455421 33.8504 2.1514 38.1764 4.95892 41.7731C7.76644 45.3697 11.5652 48.0829 15.8956 49.5843C20.2261 51.0857 24.9026 51.3111 29.3596 50.2331C33.8165 49.1552 37.8629 46.8201 41.0091 43.5103C42.7556 46.3979 44.0552 49.5289 44.8644 52.7987C44.9301 53.1368 45.1125 53.4416 45.3803 53.6609C45.6481 53.8801 45.9846 54 46.332 54C46.6793 54 47.0158 53.8801 47.2836 53.6609C47.5514 53.4416 47.7338 53.1368 47.7995 52.7987C48.6083 49.5262 49.9136 46.3944 51.6707 43.5103C54.8169 46.8201 58.8633 49.1552 63.3202 50.2331C67.7771 51.3111 72.4537 51.0857 76.7841 49.5843C81.1146 48.0829 84.9133 45.3697 87.7209 41.7731C90.5284 38.1764 92.2243 33.8504 92.6036 29.3183C92.6607 28.6892 92.6798 28.0413 92.6798 27.3902C92.6925 27.0347 92.6829 26.6667 92.6734 26.327ZM23.7474 48.09C18.3904 48.0839 13.2401 46.0394 9.35959 42.3783C5.47912 38.7172 3.16464 33.7191 2.89386 28.4156C5.85454 27.5913 8.9159 27.1763 11.9911 27.1826C17.3421 27.1818 22.6169 28.4399 27.3819 30.8535C32.1468 33.2672 36.2658 36.7674 39.4003 41.0664C37.4472 43.2756 35.04 45.0453 32.3404 46.2567C29.6407 47.4681 26.7108 48.0932 23.7474 48.09ZM46.3621 47.9296C45.465 45.577 44.3273 43.3215 42.9669 41.1985C44.4507 39.1801 45.5971 36.9381 46.3621 34.5585C47.1255 36.9387 48.2721 39.1809 49.7573 41.1985C48.3852 43.3174 47.2419 45.5735 46.3462 47.9296H46.3621ZM68.9736 48.09C66.0091 48.0915 63.0784 47.4656 60.3774 46.2544C57.6764 45.0432 55.2673 43.2744 53.3112 41.0664C56.4489 36.7677 60.5704 33.268 65.3372 30.8545C70.1041 28.441 75.3804 27.1826 80.7331 27.1826C83.8073 27.1764 86.8676 27.5913 89.8272 28.4156C89.5562 33.7218 87.2395 38.7222 83.3557 42.3837C79.4718 46.0452 74.3176 48.088 68.9577 48.09H68.9736Z"/>
+      <path d="M46.3463 7.73768C48.5018 7.73768 50.2492 6.00555 50.2492 3.86884C50.2492 1.73214 48.5018 0 46.3463 0C44.1908 0 42.4434 1.73214 42.4434 3.86884C42.4434 6.00555 44.1908 7.73768 46.3463 7.73768Z"/>
+    </g>
+  </defs></svg>
+
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="viewport" id="vp">
+
+      <!-- ════════ WELCOME ════════ -->
+      <section class="screen active" id="welcome">
+        <div class="status"><span class="l">9:41</span><span class="r">●●● 5G ▮</span></div>
+        <div class="scrollarea" style="display:flex;flex-direction:column;justify-content:center;background:radial-gradient(120% 70% at 50% 0%,#fff,var(--cream) 55%,var(--rose-wash))">
+          <div class="pad" style="text-align:center">
+            <div style="width:108px;height:108px;margin:0 auto 24px;background:var(--charcoal);border-radius:50%;display:grid;place-items:center;box-shadow:0 16px 30px -14px rgba(51,49,50,.55)">
+              <svg class="lotus" style="width:58px" viewBox="0 0 93 54" fill="var(--rose)"><use href="#lotus"/></svg>
+            </div>
+            <div class="h1" style="font-size:31px">Shanti Recovery</div>
+            <div style="font-weight:700;font-size:10px;letter-spacing:.42em;text-transform:uppercase;color:var(--rose);margin-top:8px;padding-left:.42em">Recovery Wellness</div>
+            <p style="margin-top:14px;color:var(--rose-deep);font-size:16px">Your journey to recovery starts here</p>
+            <div style="margin-top:46px;display:flex;flex-direction:column;gap:16px">
+              <button class="btn btn-primary" data-go="signup">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                Create New Account
+              </button>
+              <button class="btn btn-secondary" data-go="signin">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                Sign In
+              </button>
+            </div>
+            <div style="margin-top:32px;background:var(--rose-wash);border:1.5px solid var(--rose-soft);border-radius:16px;padding:16px;font-size:12px;color:var(--ink-soft);line-height:1.5">Your privacy matters. All your data is encrypted and secure.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════════ SIGN IN ════════ -->
+      <section class="screen" id="signin">
+        <div class="status"><span class="l">9:41</span><span class="r">●●● 5G ▮</span></div>
+        <div class="scrollarea"><div class="pad" style="padding-top:14px;text-align:center">
+          <div class="back" style="text-align:left" data-go="welcome">&larr;</div>
+          <svg class="lotus" style="width:64px;margin:18px auto 0" viewBox="0 0 93 54" fill="var(--rose)"><use href="#lotus"/></svg>
+          <div class="h1" style="margin-top:18px">Welcome back</div>
+          <p style="color:var(--ink-soft);font-size:14px;margin-top:4px">We saved your place.</p>
+          <div style="text-align:left;display:flex;flex-direction:column;gap:13px;margin-top:26px">
+            <div class="field"><div class="lab">Email</div><input value="maya@email.com" /></div>
+            <div class="field"><div class="lab">Password</div><input type="password" value="123456" /></div>
+          </div>
+          <div style="text-align:right;margin:12px 0 18px;font-size:12.5px;color:var(--rose-deep);font-weight:700">Forgot password?</div>
+          <button class="btn btn-rose" data-go="home">Sign in</button>
+          <div style="margin-top:36px;color:var(--ink-soft);font-size:13px">New here? <b style="color:var(--rose-deep);cursor:pointer" data-go="signup">Create an account</b></div>
+        </div></div>
+      </section>
+
+      <!-- ════════ CREATE ACCOUNT ════════ -->
+      <section class="screen" id="signup">
+        <div class="status"><span class="l">9:41</span><span class="r">●●● 5G ▮</span></div>
+        <div class="scrollarea"><div class="pad" style="padding-top:14px">
+          <div class="back" data-go="welcome">&larr;</div>
+          <svg class="lotus" style="width:56px;margin:14px auto 0;display:block" viewBox="0 0 93 54" fill="var(--rose)"><use href="#lotus"/></svg>
+          <div class="h1" style="margin-top:16px;text-align:center">Begin your journey</div>
+          <p style="color:var(--ink-soft);font-size:14px;margin-top:4px;text-align:center">It’s private, and it’s yours.</p>
+          <div style="display:flex;flex-direction:column;gap:13px;margin-top:24px">
+            <div class="field"><div class="lab">Name</div><input value="Maya" /></div>
+            <div class="field"><div class="lab">Email</div><input value="maya@email.com" /></div>
+            <div class="field"><div class="lab">Password</div><input type="password" value="123456" /></div>
+          </div>
+          <label style="display:flex;align-items:center;gap:10px;margin-top:16px;font-size:12.5px;color:var(--ink-soft);cursor:pointer">
+            <span style="width:22px;height:22px;border-radius:7px;background:var(--rose);display:grid;place-items:center;color:#fff;font-size:13px;flex:none">✓</span>
+            I agree to the Terms &amp; Privacy Policy
+          </label>
+          <button class="btn btn-primary" style="margin-top:20px" data-go="onboard">Create account</button>
+          <div style="display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--ink-faint);font-size:12px"><span style="flex:1;height:1px;background:var(--line)"></span>or continue with<span style="flex:1;height:1px;background:var(--line)"></span></div>
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-secondary" style="font-size:15px" data-go="onboard"> Apple</button>
+            <button class="btn btn-secondary" style="font-size:15px" data-go="onboard">G Google</button>
+          </div>
+          <div style="margin-top:22px;text-align:center;color:var(--ink-soft);font-size:13px">Already have an account? <b style="color:var(--rose-deep);cursor:pointer" data-go="signin">Sign in</b></div>
+        </div></div>
+      </section>
+
+      <!-- ════════ ONBOARDING — INTENTION ════════ -->
+      <section class="screen" id="onboard">
+        <div class="status"><span class="l">9:41</span><span class="r">●●● 5G ▮</span></div>
+        <div class="scrollarea"><div class="pad" style="padding-top:16px">
+          <div style="display:flex;align-items:center;gap:14px"><div class="back" data-go="welcome">&larr;</div><div class="progress-track" style="flex:1"><i style="width:40%"></i></div></div>
+          <div class="soft-title" style="margin-top:22px;color:var(--rose-deep)">Step 2 of 5</div>
+          <div class="h1" style="margin-top:8px;font-size:25px">What brings you to Shanti?</div>
+          <div style="display:flex;flex-direction:column;gap:11px;margin-top:18px">
+            <div class="card opt sel" data-opt><div class="row"></div><div style="display:flex;align-items:center;gap:13px"><div class="chk"></div><b style="font-size:14.5px">Stay sober &amp; track time</b></div></div>
+            <div class="card opt" data-opt><div style="display:flex;align-items:center;gap:13px"><div class="chk"></div><b style="font-size:14.5px">Manage stress &amp; anxiety</b></div></div>
+            <div class="card opt" data-opt><div style="display:flex;align-items:center;gap:13px"><div class="chk"></div><b style="font-size:14.5px">Build healthier habits</b></div></div>
+            <div class="card opt" data-opt><div style="display:flex;align-items:center;gap:13px"><div class="chk"></div><b style="font-size:14.5px">Find a support community</b></div></div>
+          </div>
+          <button class="btn btn-primary" style="margin-top:24px" data-go="home">Continue</button>
+        </div></div>
+      </section>
+
+      <!-- ════════ HOME ════════ -->
+      <section class="screen" id="home" data-tab="home">
+        <div class="status"><span class="l">9:41</span><span class="r">●●● 5G ▮</span></div>
+        <div class="scrollarea"><div class="pad" style="padding-top:6px">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div class="greet"><small>Tuesday, 30 June</small><div class="h1" style="margin-top:4px">Good morning, Maya</div></div>
+            <img class="avatar" src="https://i.pravatar.cc/120?img=5" alt="" data-go="profile" style="cursor:pointer" />
+          </div>
+          <div class="card" style="margin-top:18px;text-align:center;background:radial-gradient(120% 100% at 50% 0%,#fff,var(--rose-wash));border-color:var(--rose-soft)">
+            <div style="position:relative;width:178px;height:178px;margin:0 auto">
+              <svg viewBox="0 0 180 180" style="width:178px;height:178px;transform:rotate(-90deg)">
+                <circle cx="90" cy="90" r="78" fill="none" stroke="var(--sand)" stroke-width="13"/>
+                <circle cx="90" cy="90" r="78" fill="none" stroke="url(#rg)" stroke-width="13" stroke-linecap="round" stroke-dasharray="490" stroke-dashoffset="120"/>
+                <defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--rose)"/><stop offset="1" stop-color="var(--rose-deep)"/></linearGradient></defs>
+              </svg>
+              <div class="ring-ctr"><span style="font-size:50px;font-weight:600;color:var(--charcoal);line-height:1">127</span><span style="font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--rose-deep);font-weight:800;margin-top:6px">Days Sober</span></div>
+            </div>
+            <div style="display:flex;justify-content:center;gap:18px;margin-top:6px;color:var(--ink-soft);font-size:12.5px;font-weight:700"><span>🔥 18 wk streak</span><span>·</span><span>Next: 6 months</span></div>
+          </div>
+          <button class="btn btn-rose" style="margin-top:16px" data-go="checkin">I stayed sober today</button>
+          <div class="soft-title" style="margin-top:20px">Quick tools</div>
+          <div class="quick" style="margin-top:11px">
+            <div class="qi" data-go="breathe"><div class="ic" style="background:var(--sage-soft)">🌬️</div><div><b>Breathe</b><span>3 min</span></div></div>
+            <div class="qi" data-go="journal"><div class="ic" style="background:var(--rose-tint)">📔</div><div><b>Journal</b><span>Reflect</span></div></div>
+            <div class="qi" data-go="tools"><div class="ic" style="background:#FBEAD2">🧘</div><div><b>Meditate</b><span>Library</span></div></div>
+            <div class="qi" data-go="sos"><div class="ic" style="background:#F3DAD3">🆘</div><div><b>Urge help</b><span>SOS</span></div></div>
+          </div>
+        </div></div>
+        <div class="tabbar" data-tabbar></div>
+      </section>
+
+      <!-- ════════ CHECK-IN ════════ -->
+      <section class="screen" id="checkin">
+        <div class="status"><span class="l">9:41</span><span class="r">●●● 5G ▮</span></div>
+        <div class="scrollarea"><div class="pad" style="padding-top:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center"><div class="back" data-go="home">&larr;</div><small style="color:var(--ink-faint);font-weight:700">Evening check-in</small><div style="width:30px"></div></div>
+          <div class="h1" style="margin-top:18px;font-size:25px">How are you feeling?</div>
+          <p style="color:var(--ink-soft);font-size:13px;margin-top:4px">There’s no wrong answer.</p>
+          <div class="moodset" style="margin-top:18px">
+            <div class="m" data-mood>😣</div><div class="m" data-mood>😕</div><div class="m sel" data-mood>🙂</div><div class="m" data-mood>😊</div><div class="m" data-mood>🥰</div>
+          </div>
+          <div class="soft-title" style="margin-top:22px">What’s on your mind?</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:11px">
+            <span class="pill" style="background:var(--rose-tint);color:var(--rose-deep)">Calm ✓</span>
+            <span class="pill" style="background:var(--sage-soft);color:#56654e">Grateful ✓</span>
+            <span class="pill" style="background:var(--sand);color:var(--ink-soft)">Tired</span>
+            <span class="pill" style="background:var(--sand);color:var(--ink-soft)">Hopeful</span>
+          </div>
+          <div class="card" style="margin-top:16px;color:var(--ink-faint);font-size:13.5px;font-style:italic">“Today I noticed I felt steadier after my morning walk…”</div>
+          <button class="btn btn-primary" style="margin-top:18px" data-go="home">Save check-in</button>
+        </div></div>
+      </section>
+
+      <!-- ════════ TOOLS ════════ -->
+      <section class="screen" id="tools" data-tab="tools">
+        <div class="status"><span class="l">9:41</span><span class="r">●●● 5G ▮</span></div>
+        <div class="scrollarea"><div class="pad" style="padding-top:8px">
+          <div class="greet"><small>For this moment</small><div class="h1" style="margin-top:4px">Your toolkit</div></div>
+          <div class="card" style="margin-top:16px;background:linear-gradient(135deg,var(--charcoal),#4d4849);color:#fff;border:0;cursor:pointer" data-go="breathe">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start">
+              <div><div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.7;font-weight:800">Featured</div><div style="font-size:20px;font-weight:600;margin-top:8px">Riding the urge wave</div><div style="font-size:12.5px;opacity:.8;margin-top:4px">Guided · 8 min</div></div>
+              <div style="width:46px;height:46px;border-radius:50%;background:var(--rose);display:grid;place-items:center">▶</div>
+            </div>
+          </div>
+          <div class="quick" style="margin-top:16px">
+            <div class="qi" data-go="breathe" style="flex-direction:column;align-items:flex-start;gap:8px"><div class="ic" style="background:var(--sage-soft)">🌬️</div><div><b>Breathwork</b><span>5 exercises</span></div></div>
+            <div class="qi" data-go="breathe" style="flex-direction:column;align-items:flex-start;gap:8px"><div class="ic" style="background:var(--rose-tint)">🧘</div><div><b>Meditations</b><span>40+ tracks</span></div></div>
+            <div class="qi" data-go="journal" style="flex-direction:column;align-items:flex-start;gap:8px"><div class="ic" style="background:#FBEAD2">📔</div><div><b>Journal</b><span>Prompts</span></div></div>
+            <div class="qi" data-go="progress" style="flex-direction:column;align-items:flex-start;gap:8px"><div class="ic" style="background:#EFE2DD">📈</div><div><b>Progress</b><span>Milestones</span></div></div>
+          </div>
+          <div class="card" style="margin-top:16px;display:flex;gap:13px;align-items:center;border-color:var(--rose-soft);background:var(--rose-wash);cursor:pointer" data-go="sos">
+            <div style="width:42px;height:42px;border-radius:50%;background:var(--rose-deep);display:grid;place-items:center;color:#fff;font-size:20px">🆘</div>
+            <div style="flex:1"><b style="font-size:14px;color:var(--rose-deep)">In crisis right now?</b><div style="font-size:12px;color:var(--ink-soft)">Open the SOS lifeline</div></div>
+            <div style="color:var(--rose-deep);font-size:20px">›</div>
+          </div>
+        </div></div>
+        <div class="tabbar" data-tabbar></div>
+      </section>
+
+      <!-- ════════ BREATHE ════════ -->
+      <section class="screen" id="breathe">
+        <div class="status light"><span class="l">9:41</span><span class="r">●●● 5G ▮</span></div>
+        <div class="scrollarea" style="background:linear-gradient(180deg,#9C6F62,#6E463C);color:#fff;display:flex;flex-direction:column">
+          <div class="pad" style="padding-top:6px;display:flex;justify-content:space-between;align-items:center"><span class="back" style="color:#fff" data-go="tools">⌄</span><small style="font-weight:800;letter-spacing:.12em;opacity:.85">BOX BREATHING</small><span style="font-size:18px;opacity:.7">⋯</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;min-height:360px">
+            <div style="position:absolute;width:230px;height:230px;border-radius:50%;background:rgba(255,255,255,.06)"></div>
+            <div style="position:absolute;width:175px;height:175px;border-radius:50%;background:rgba(255,255,255,.1)"></div>
+            <div class="breathe-orb" style="width:128px;height:128px;border-radius:50%;background:radial-gradient(circle,#fff,var(--rose-soft));display:flex;align-items:center;justify-content:center;box-shadow:0 0 50px rgba(255,255,255,.4)">
+              <div style="text-align:center;color:var(--rose-deep)"><div style="font-size:24px;font-weight:600">Breathe in</div><div style="font-size:13px;opacity:.8;margin-top:2px">4 seconds</div></div>
+            </div>
+          </div>
+          <div class="pad" style="text-align:center;padding-bottom:30px">
+            <div style="font-size:13px;opacity:.85">Round 3 of 6 · 2:40 left</div>
+            <div style="height:5px;background:rgba(255,255,255,.2);border-radius:9px;margin:14px 0 22px;overflow:hidden"><div style="width:55%;height:100%;background:#fff;border-radius:9px"></div></div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:30px">
+              <span style="font-size:22px;opacity:.8">↺</span>
+              <div style="width:66px;height:66px;border-radius:50%;background:#fff;color:var(--rose-deep);display:grid;place-items:center;font-size:24px;cursor:pointer" data-go="home">✓</div>
+              <span style="font-size:22px;opacity:.8">🔊</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════════ JOURNAL ════════ -->
+      <section class="screen" id="journal">
+        <div class="status"><span class="l">9:41</span><span class="r">●●● 5G ▮</span></div>
+        <div class="scrollarea"><div class="pad" style="padding-top:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center"><div class="back" data-go="tools">&larr;</div><small style="color:var(--ink-faint);font-weight:700">30 June · Evening</small><b style="color:var(--rose-deep);font-size:13px;cursor:pointer" data-go="home">Save</b></div>
+          <div class="card" style="margin-top:16px;background:var(--rose-wash);border-color:var(--rose-soft)">
+            <div class="soft-title" style="color:var(--rose-deep)">Today’s prompt</div>
+            <div style="font-size:18px;font-weight:600;margin-top:8px;color:var(--charcoal);line-height:1.4">What is one thing you’re proud of from today?</div>
+          </div>
+          <div style="margin-top:18px;font-size:16px;line-height:1.85;color:var(--ink)">I made it through the dinner without drinking.<span style="color:var(--ink-faint)"> My hands were shaky but I called Sam instead and we talked for twenty minutes. I’m proud that I reached out.</span></div>
+        </div></div>
+        <div style="flex:none;border-top:1px solid var(--line);background:#fff;padding:13px 20px;display:flex;align-items:center;gap:18px;color:var(--ink-faint)"><span>📷</span><span>🎙️</span><span>😊</span><span style="margin-left:auto;font-size:11px;font-weight:700">214 words</span></div>
+      </section>
+
+      <!-- ════════ PROGRESS ════════ -->
+      <section class="screen" id="progress">
+        <div class="status"><span class="l">9:41</span><span class="r">●●● 5G ▮</span></div>
+        <div class="scrollarea"><div class="pad" style="padding-top:8px">
+          <div style="display:flex;align-items:center;gap:14px"><div class="back" data-go="home">&larr;</div><div class="greet"><small>Since 24 Feb 2026</small><div class="h1" style="margin-top:2px;font-size:24px">Your milestones</div></div></div>
+          <div style="display:flex;gap:11px;margin-top:16px">
+            <div class="card" style="flex:1;text-align:center"><div style="font-size:26px;font-weight:600;color:var(--charcoal)">127</div><div style="font-size:11px;color:var(--ink-faint);font-weight:700">DAYS</div></div>
+            <div class="card" style="flex:1;text-align:center"><div style="font-size:26px;font-weight:600;color:var(--charcoal)">$1.9k</div><div style="font-size:11px;color:var(--ink-faint);font-weight:700">SAVED</div></div>
+            <div class="card" style="flex:1;text-align:center"><div style="font-size:26px;font-weight:600;color:var(--charcoal)">381</div><div style="font-size:11px;color:var(--ink-faint);font-weight:700">HRS BACK</div></div>
+          </div>
+          <div class="soft-title" style="margin-top:20px">Badges</div>
+          <div style="display:flex;gap:14px;margin-top:12px">
+            <div style="text-align:center;flex:1"><div style="width:52px;height:52px;border-radius:50%;background:var(--rose);display:grid;place-items:center;font-size:22px;margin:0 auto;box-shadow:var(--shadow-sm)">🌱</div><div style="font-size:10px;margin-top:6px;font-weight:700">1 week</div></div>
+            <div style="text-align:center;flex:1"><div style="width:52px;height:52px;border-radius:50%;background:var(--rose-deep);display:grid;place-items:center;font-size:22px;margin:0 auto;box-shadow:var(--shadow-sm)">🌿</div><div style="font-size:10px;margin-top:6px;font-weight:700">1 month</div></div>
+            <div style="text-align:center;flex:1"><div style="width:52px;height:52px;border-radius:50%;background:var(--gold);display:grid;place-items:center;font-size:22px;margin:0 auto;box-shadow:var(--shadow-sm)">🌸</div><div style="font-size:10px;margin-top:6px;font-weight:700">100 days</div></div>
+            <div style="text-align:center;flex:1;opacity:.4"><div style="width:52px;height:52px;border-radius:50%;background:var(--sand);display:grid;place-items:center;font-size:22px;margin:0 auto">🔒</div><div style="font-size:10px;margin-top:6px;font-weight:700">6 mo</div></div>
+          </div>
+          <div class="card" style="margin-top:20px">
+            <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700"><span>Next: 6 months</span><span style="color:var(--rose-deep)">71%</span></div>
+            <div class="progress-track" style="margin-top:10px"><i style="width:71%"></i></div>
+            <div style="font-size:11.5px;color:var(--ink-faint);margin-top:9px">53 days to go — you’ve got this.</div>
+          </div>
+        </div></div>
+      </section>
+
+      <!-- ════════ SOS ════════ -->
+      <section class="screen" id="sos">
+        <div class="status light"><span class="l">9:41</span><span class="r">●●● 5G ▮</span></div>
+        <div class="scrollarea" style="background:linear-gradient(180deg,#7C4A40,#5E342C);color:#fff;display:flex;flex-direction:column">
+          <div class="pad" style="padding-top:8px;flex:1;display:flex;flex-direction:column">
+            <div style="display:flex;justify-content:space-between;align-items:center"><span class="back" style="color:#fff" data-go="tools">✕</span><small style="font-weight:800;letter-spacing:.14em">SOS LIFELINE</small><div style="width:18px"></div></div>
+            <div style="text-align:center;margin-top:24px"><div style="font-size:27px;font-weight:600;line-height:1.25">Take a breath.<br>You’re safe.</div><p style="font-size:13.5px;opacity:.82;margin:12px 18px 0;line-height:1.6">This urge will pass. It always does. Let’s get through the next few minutes together.</p></div>
+            <div style="margin-top:24px;display:flex;flex-direction:column;gap:12px">
+              <button class="btn" style="background:#fff;color:#6E463C;justify-content:flex-start" data-go="breathe"><span style="font-size:20px">🌬️</span> Start 60-second breathing</button>
+              <button class="btn" style="background:rgba(255,255,255,.14);color:#fff;justify-content:flex-start"><span style="font-size:20px">📞</span> Call my sponsor — Sam</button>
+              <button class="btn" style="background:rgba(255,255,255,.14);color:#fff;justify-content:flex-start"><span style="font-size:20px">💬</span> Reach a counsellor now</button>
+              <button class="btn" style="background:rgba(255,255,255,.14);color:#fff;justify-content:flex-start"><span style="font-size:20px">📝</span> Why I’m staying sober</button>
+            </div>
+            <div style="margin-top:28px;text-align:center;font-size:12px;opacity:.7">Emergency? Call <b>988</b> · Crisis &amp; Lifeline</div>
+            <div style="margin-top:20px;text-align:center"><span style="font-size:13px;opacity:.85;cursor:pointer;text-decoration:underline" data-go="home">I’m feeling steadier now</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════════ COMMUNITY ════════ -->
+      <section class="screen" id="community" data-tab="community">
+        <div class="status"><span class="l">9:41</span><span class="r">●●● 5G ▮</span></div>
+        <div class="scrollarea"><div class="pad" style="padding-top:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center"><div class="greet"><small>Together</small><div class="h1" style="margin-top:4px">Community</div></div><div style="width:42px;height:42px;border-radius:50%;background:var(--sand);display:grid;place-items:center">🔍</div></div>
+          <div class="seg" style="margin-top:14px"><b class="on">For you</b><b data-go="meetings">Meetings</b><b>Groups</b></div>
+          <div class="post" style="margin-top:14px">
+            <div class="ph"><img src="https://i.pravatar.cc/80?img=12" alt=""><div><b>Daniel R.</b><span>2h · 90 days 🎉</span></div></div>
+            <div style="font-size:13.5px;line-height:1.6">Three months today. The mornings are the hardest but I keep showing up. Thank you all for being here.</div>
+            <div class="actions"><span>🤍 214</span><span>💬 38</span><span style="margin-left:auto">🌸 Celebrate</span></div>
+          </div>
+          <div class="post" style="margin-top:12px">
+            <div class="ph"><img src="https://i.pravatar.cc/80?img=32" alt=""><div><b>Priya S.</b><span>5h · Reflection</span></div></div>
+            <div style="font-size:13.5px;line-height:1.6">What helped you most in your first week? Asking for a friend who just started day 1. 💛</div>
+            <div class="actions"><span>🤍 86</span><span>💬 51</span></div>
+          </div>
+        </div></div>
+        <div class="tabbar" data-tabbar></div>
+      </section>
+
+      <!-- ════════ MEETINGS ════════ -->
+      <section class="screen" id="meetings">
+        <div class="status"><span class="l">9:41</span><span class="r">●●● 5G ▮</span></div>
+        <div class="scrollarea"><div class="pad" style="padding-top:16px">
+          <div style="display:flex;align-items:center;gap:14px"><div class="back" data-go="community">&larr;</div><div class="greet"><small>Find support</small><div class="h1" style="margin-top:2px;font-size:24px">Meetings</div></div></div>
+          <div class="seg" style="margin-top:14px"><b class="on">Online</b><b>Near me</b></div>
+          <div class="card" style="margin-top:14px;border-color:var(--rose-soft);background:var(--rose-wash)">
+            <div style="display:flex;justify-content:space-between"><span class="pill" style="background:var(--rose);color:#fff">● Live now</span><span style="font-size:12px;color:var(--ink-soft);font-weight:700">18 here</span></div>
+            <div style="font-size:18px;font-weight:600;margin-top:12px;color:var(--charcoal)">Morning Serenity Circle</div>
+            <div style="font-size:12.5px;color:var(--ink-soft);margin-top:3px">Open share · Hosted by Lena M.</div>
+            <button class="btn btn-rose" style="margin-top:14px" data-go="community">Join meeting</button>
+          </div>
+          <div class="soft-title" style="margin-top:20px">Later today</div>
+          <div class="card" style="margin-top:11px;padding:6px 18px">
+            <div class="listrow"><div class="ic" style="background:var(--sage-soft)">🧘</div><div class="tx"><b>Mindful Recovery</b><span>2:00 PM · 45 min</span></div><span style="color:var(--ink-faint)">›</span></div>
+            <div class="listrow"><div class="ic" style="background:#FBEAD2">☕</div><div class="tx"><b>Evening Check-In</b><span>7:30 PM · Open</span></div><span style="color:var(--ink-faint)">›</span></div>
+            <div class="listrow"><div class="ic" style="background:var(--rose-tint)">📖</div><div class="tx"><b>Step Study Group</b><span>9:00 PM · Step 4</span></div><span style="color:var(--ink-faint)">›</span></div>
+          </div>
+        </div></div>
+      </section>
+
+      <!-- ════════ PROFILE ════════ -->
+      <section class="screen" id="profile" data-tab="profile">
+        <div class="status light"><span class="l">9:41</span><span class="r">●●● 5G ▮</span></div>
+        <div class="scrollarea">
+          <div style="height:150px;background:radial-gradient(120% 130% at 50% -10%,var(--rose),var(--rose-deep));position:relative"><div style="position:absolute;top:14px;right:20px;color:#fff;font-size:18px;cursor:pointer" data-go="settings">⚙</div></div>
+          <div class="pad" style="margin-top:-58px">
+            <div style="text-align:center">
+              <img src="https://i.pravatar.cc/160?img=5" style="width:96px;height:96px;border-radius:50%;border:4px solid #fff;box-shadow:var(--shadow-sm)" alt="">
+              <div style="font-size:23px;font-weight:600;margin-top:10px;color:var(--charcoal)">Maya Thompson</div>
+              <div style="font-size:12.5px;color:var(--ink-soft)">Sober since 24 Feb 2026 · 🌸 100 days</div>
+            </div>
+            <div class="card" style="margin-top:18px;padding:6px 18px">
+              <div class="listrow" data-go="progress"><div class="ic" style="background:var(--rose-tint)">🏅</div><div class="tx"><b>Milestones &amp; badges</b><span>3 earned</span></div><span style="color:var(--ink-faint)">›</span></div>
+              <div class="listrow" data-go="journal"><div class="ic" style="background:var(--sage-soft)">📔</div><div class="tx"><b>My journal</b><span>48 entries</span></div><span style="color:var(--ink-faint)">›</span></div>
+              <div class="listrow"><div class="ic" style="background:#FBEAD2">🤝</div><div class="tx"><b>My support team</b><span>Sponsor · 2 buddies</span></div><span style="color:var(--ink-faint)">›</span></div>
+              <div class="listrow" data-go="settings"><div class="ic" style="background:#EFE2DD">⚙️</div><div class="tx"><b>Settings</b><span>Reminders, privacy</span></div><span style="color:var(--ink-faint)">›</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="tabbar" data-tabbar></div>
+      </section>
+
+      <!-- ════════ SETTINGS ════════ -->
+      <section class="screen" id="settings">
+        <div class="status"><span class="l">9:41</span><span class="r">●●● 5G ▮</span></div>
+        <div class="scrollarea"><div class="pad" style="padding-top:16px">
+          <div style="display:flex;align-items:center;gap:14px"><div class="back" data-go="profile">&larr;</div><div class="h1" style="font-size:24px">Settings</div></div>
+          <div class="soft-title" style="margin-top:20px">Preferences</div>
+          <div class="card" style="margin-top:11px;padding:6px 18px">
+            <div class="listrow"><div class="ic" style="background:#FBEAD2">🔔</div><div class="tx"><b>Daily reminders</b><span>9:00 AM &amp; 8:00 PM</span></div><div style="width:42px;height:25px;border-radius:99px;background:var(--rose);position:relative"><span style="position:absolute;width:19px;height:19px;border-radius:50%;background:#fff;top:3px;right:3px"></span></div></div>
+            <div class="listrow"><div class="ic" style="background:var(--sage-soft)">🌙</div><div class="tx"><b>Calm mode</b><span>Dim &amp; quiet at night</span></div><div style="width:42px;height:25px;border-radius:99px;background:var(--sand);position:relative"><span style="position:absolute;width:19px;height:19px;border-radius:50%;background:#fff;top:3px;left:3px;box-shadow:var(--shadow-sm)"></span></div></div>
+            <div class="listrow"><div class="ic" style="background:#EFE2DD">🆘</div><div class="tx"><b>Emergency contacts</b><span>2 saved</span></div><span style="color:var(--ink-faint)">›</span></div>
+          </div>
+          <div class="soft-title" style="margin-top:18px">Support</div>
+          <div class="card" style="margin-top:11px;padding:6px 18px">
+            <div class="listrow" data-go="sos"><div class="ic" style="background:var(--rose-tint)">❤️</div><div class="tx"><b>Crisis resources</b></div><span style="color:var(--ink-faint)">›</span></div>
+            <div class="listrow" data-go="welcome"><div class="ic" style="background:var(--sand)">↪</div><div class="tx" style="color:var(--rose-deep)"><b>Sign out</b></div></div>
+          </div>
+        </div></div>
+        <div class="tabbar" data-tabbar></div>
+      </section>
+
+    </div>
+  </div>
+
+  <div class="map">
+    <b>Flow:</b> Welcome → Create Account / Sign In → Set intention → Home · Check-in · Breathe · Journal · Progress · SOS · Community · Meetings · Profile · Settings &nbsp;·&nbsp; brand palette &amp; lotus from the Shanti logo
+  </div>
+
+<script>
+  const vp = document.getElementById('vp');
+  const screens = [...vp.querySelectorAll('.screen')];
+
+  // Bottom tab template (shared)
+  const TABS = [
+    {id:'home',      label:'Home',      icon:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>'},
+    {id:'progress',  label:'Progress',  icon:'<path d="M4 19V5m5 14V9m5 10V7m5 12V11"/>'},
+    {id:'__fab',     label:'',          icon:''},
+    {id:'community', label:'Community', icon:'<path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>'},
+    {id:'profile',   label:'Profile',   icon:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'}
+  ];
+  function buildTabbar(host, activeTab){
+    host.innerHTML = TABS.map(t=>{
+      if(t.id==='__fab') return '<div class="tab center" data-go="checkin"><div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div></div>';
+      const on = t.id===activeTab ? ' active':'';
+      return '<div class="tab'+on+'" data-go="'+t.id+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+t.icon+'</svg>'+t.label+'</div>';
+    }).join('');
+  }
+
+  function show(id){
+    const target = document.getElementById(id);
+    if(!target) return;
+    screens.forEach(s=>s.classList.toggle('active', s===target));
+    // refresh tabbar active state on the target screen
+    const tb = target.querySelector('[data-tabbar]');
+    if(tb) buildTabbar(tb, target.dataset.tab || '');
+    target.querySelector('.scrollarea')?.scrollTo(0,0);
+  }
+
+  // Click delegation for anything with data-go
+  vp.addEventListener('click', e=>{
+    const go = e.target.closest('[data-go]');
+    if(go){ show(go.getAttribute('data-go')); return; }
+    // segmented controls
+    const seg = e.target.closest('.seg b');
+    if(seg && !seg.hasAttribute('data-go')){ [...seg.parentElement.children].forEach(b=>b.classList.remove('on')); seg.classList.add('on'); }
+    // mood picker
+    const m = e.target.closest('[data-mood]');
+    if(m){ [...m.parentElement.children].forEach(x=>x.classList.remove('sel')); m.classList.add('sel'); }
+    // onboarding options
+    const opt = e.target.closest('[data-opt]');
+    if(opt){ [...opt.parentElement.querySelectorAll('[data-opt]')].forEach(o=>o.classList.remove('sel')); opt.classList.add('sel'); }
+    // pills toggle
+    const pill = e.target.closest('.pill');
+    if(pill){ pill.classList.toggle('on'); }
+  });
+
+  // style for selected onboarding option + pill via JS class
+  const styleEl = document.createElement('style');
+  styleEl.textContent = `
+    .opt{ cursor:pointer; transition:.15s; }
+    .opt .chk{ width:34px;height:34px;border-radius:10px;background:var(--sand);flex:none;display:grid;place-items:center;color:#fff;transition:.15s; }
+    .opt.sel{ border-color:var(--rose-soft); background:var(--rose-wash); }
+    .opt.sel .chk{ background:var(--rose); }
+    .opt.sel .chk::after{ content:'✓'; }
+  `;
+  document.head.appendChild(styleEl);
+
+  // init
+  show('welcome');
+</script>
+</body>
+</html>

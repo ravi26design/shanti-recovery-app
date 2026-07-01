@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Shanti — Recovery Wellness · UI Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    /* —— Brand palette, drawn from the Shanti logo —— */
+    --rose:        #C8A297;   /* lotus mark + "recovery wellness" */
+    --rose-deep:   #A9786B;   /* pressed / emphasis */
+    --rose-soft:   #E4CDC4;
+    --rose-tint:   #F1E2DB;
+    --rose-wash:   #F8EFEA;
+    --charcoal:    #333132;   /* "shanti" wordmark */
+    --ink:         #2B2A2B;
+    --ink-soft:    #6E6663;
+    --ink-faint:   #A59B96;
+    --sage:        #8E9E86;   /* calm complementary accent */
+    --sage-soft:   #DCE3D6;
+    --cream:       #FAF5F1;
+    --sand:        #F1E8E1;
+    --line:        #EADFD8;
+    --white:       #FFFFFF;
+    --gold:        #D8A24A;
+
+    --shadow-sm: 0 2px 8px rgba(86,60,52,.06);
+    --shadow:    0 14px 40px -18px rgba(86,60,52,.35);
+    --shadow-lg: 0 30px 70px -30px rgba(86,60,52,.45);
+
+    --r-lg: 30px;
+    --r-md: 20px;
+    --r-sm: 14px;
+    --font-display: "Inter", system-ui, sans-serif;
+    --font-body: "Inter", system-ui, sans-serif;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    font-family:var(--font-body);
+    color:var(--ink);
+    background:
+      radial-gradient(1100px 700px at 12% -8%, var(--rose-wash), transparent 60%),
+      radial-gradient(1000px 800px at 100% 0%, #F4ECE6, transparent 55%),
+      var(--cream);
+    background-attachment:fixed;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* faint grain overlay for warmth */
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.5;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  }
+  .wrap{ position:relative; z-index:1; max-width:1320px; margin:0 auto; padding:0 28px 120px; }
+
+  /* ——————————————————————— PAGE HEADER ——————————————————————— */
+  .masthead{
+    text-align:center; padding:84px 20px 56px;
+  }
+  .brand-lockup{ display:flex; flex-direction:column; align-items:center; gap:18px; }
+  .lotus{ width:74px; height:auto; display:block; }
+  .wordmark{ display:flex; flex-direction:column; align-items:center; line-height:.9; }
+  .wordmark .w1{
+    font-family:var(--font-display); font-weight:500; letter-spacing:.18em;
+    font-size:46px; color:var(--charcoal);
+  }
+  .wordmark .w2{
+    font-family:var(--font-body); font-weight:700; letter-spacing:.42em;
+    font-size:12.5px; color:var(--rose); margin-top:10px; text-transform:uppercase;
+    padding-left:.42em;
+  }
+  .masthead .lede{
+    max-width:560px; margin:30px auto 0; color:var(--ink-soft);
+    font-size:17px; line-height:1.65;
+  }
+  .masthead .meta{
+    margin-top:26px; display:inline-flex; gap:10px; flex-wrap:wrap; justify-content:center;
+  }
+  .chip{
+    font-size:12px; font-weight:700; letter-spacing:.04em; padding:8px 15px; border-radius:999px;
+    background:var(--white); border:1px solid var(--line); color:var(--ink-soft); box-shadow:var(--shadow-sm);
+  }
+  .chip.dot::before{ content:""; display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--rose); margin-right:8px; vertical-align:1px; }
+
+  /* ——————————————————————— SECTION HEADINGS ——————————————————————— */
+  .section{ margin-top:88px; }
+  .section-head{ display:flex; align-items:flex-end; gap:18px; margin-bottom:34px; }
+  .section-head .num{
+    font-family:var(--font-display); font-size:15px; font-weight:600; color:var(--rose);
+    border:1.5px solid var(--rose-soft); border-radius:50%; width:42px; height:42px;
+    display:grid; place-items:center; flex:none; background:var(--white);
+  }
+  .section-head h2{
+    font-family:var(--font-display); font-weight:500; font-size:30px; margin:0; color:var(--charcoal);
+    letter-spacing:-.01em;
+  }
+  .section-head p{ margin:4px 0 0; color:var(--ink-soft); font-size:14.5px; }
+  .section-head .hr{ flex:1; height:1px; background:linear-gradient(90deg,var(--line),transparent); margin-bottom:14px; }
+
+  /* ——————————————————————— DESIGN SYSTEM ——————————————————————— */
+  .ds-grid{ display:grid; grid-template-columns:repeat(12,1fr); gap:20px; }
+  .panel{
+    background:var(--white); border:1px solid var(--line); border-radius:var(--r-md);
+    padding:26px; box-shadow:var(--shadow-sm);
+  }
+  .panel h3{ margin:0 0 4px; font-family:var(--font-display); font-weight:600; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint); }
+  .swatches{ display:flex; flex-direction:column; gap:12px; margin-top:18px; }
+  .sw{ display:flex; align-items:center; gap:14px; }
+  .sw .dot{ width:46px; height:46px; border-radius:14px; flex:none; box-shadow:inset 0 0 0 1px rgba(0,0,0,.05); }
+  .sw .info b{ display:block; font-size:14px; }
+  .sw .info span{ font-size:12px; color:var(--ink-faint); font-variant-numeric:tabular-nums; }
+
+  .type-row{ border-top:1px solid var(--line); padding:16px 0; }
+  .type-row:first-of-type{ border-top:0; }
+  .type-row small{ color:var(--ink-faint); font-size:11px; letter-spacing:.1em; text-transform:uppercase; }
+
+  .comp-stack{ display:flex; flex-direction:column; gap:16px; margin-top:18px; }
+
+  /* shared UI atoms reused in screens + system preview */
+  .btn{ font-family:var(--font-body); font-weight:700; font-size:15px; border:0; border-radius:16px;
+        padding:16px 22px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:9px; }
+  .btn-primary{ background:var(--charcoal); color:#fff; box-shadow:0 12px 26px -12px rgba(51,49,50,.7); }
+  .btn-rose{ background:var(--rose); color:#fff; box-shadow:0 12px 26px -12px var(--rose-deep); }
+  .btn-ghost{ background:var(--rose-wash); color:var(--rose-deep); }
+  .btn-outline{ background:transparent; color:var(--charcoal); box-shadow:inset 0 0 0 1.5px var(--line); }
+  .pill{ display:inline-flex; align-items:center; gap:7px; padding:8px 14px; border-radius:999px; font-size:12.5px; font-weight:700; }
+
+  /* ——————————————————————— PHONE GALLERY ——————————————————————— */
+  .gallery{ display:flex; flex-wrap:wrap; gap:40px 36px; }
+  .device{ width:330px; flex:none; }
+  .device > .label{ text-align:center; margin-bottom:14px; }
+  .device > .label b{ font-family:var(--font-display); font-weight:600; font-size:15px; color:var(--charcoal); display:block; }
+  .device > .label span{ font-size:12px; color:var(--ink-faint); }
+
+  .phone{
+    position:relative; width:330px; height:690px; border-radius:46px; background:#211f20;
+    padding:11px; box-shadow:var(--shadow-lg);
+  }
+  .phone::after{ /* side buttons */
+    content:""; position:absolute; right:-3px; top:150px; width:3px; height:64px; border-radius:3px; background:#3a3738;
+  }
+  .bezel-notch{
+    position:absolute; top:11px; left:50%; transform:translateX(-50%); z-index:30;
+    width:118px; height:26px; background:#211f20; border-radius:0 0 16px 16px;
+  }
+  .screen{
+    position:relative; width:100%; height:100%; border-radius:36px; overflow:hidden;
+    background:var(--cream); display:flex; flex-direction:column;
+  }
+  .screen::-webkit-scrollbar{ display:none; }
+  .screen .body{ flex:1; overflow:hidden; position:relative; }
+
+  /* status bar */
+  .status{ height:46px; flex:none; display:flex; align-items:flex-end; justify-content:space-between;
+           padding:0 24px 6px; font-size:13px; font-weight:800; color:var(--ink); position:relative; z-index:5; }
+  .status.on-dark{ color:#fff; }
+  .status .sig{ display:flex; align-items:center; gap:6px; }
+  .status svg{ display:block; }
+
+  /* bottom tab bar */
+  .tabbar{
+    flex:none; height:74px; background:rgba(255,255,255,.92); backdrop-filter:blur(14px);
+    border-top:1px solid var(--line); display:flex; align-items:center; justify-content:space-around;
+    padding-bottom:8px;
+  }
+  .tab{ display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--ink-faint); font-size:10px; font-weight:700; }
+  .tab svg{ width:23px; height:23px; }
+  .tab.active{ color:var(--rose-deep); }
+  .tab.center{ position:relative; }
+  .tab.center .fab{
+    width:54px; height:54px; border-radius:50%; background:var(--charcoal); color:#fff;
+    display:grid; place-items:center; margin-top:-26px; box-shadow:0 12px 24px -8px rgba(51,49,50,.6);
+    border:4px solid var(--cream);
+  }
+
+  /* generic screen content helpers */
+  .pad{ padding:6px 22px 22px; }
+  .scroll{ height:100%; overflow:hidden; }
+  h-spacer{ display:block; }
+  .greet small{ color:var(--ink-soft); font-weight:700; font-size:12.5px; letter-spacing:.04em; text-transform:uppercase; }
+  .greet h1{ font-family:var(--font-display); font-weight:500; font-size:27px; margin:4px 0 0; color:var(--charcoal); letter-spacing:-.01em; }
+  .avatar{ width:46px; height:46px; border-radius:50%; object-fit:cover; flex:none; box-shadow:0 0 0 2px #fff, 0 0 0 3.5px var(--rose-soft); }
+
+  .card{ background:var(--white); border:1px solid var(--line); border-radius:var(--r-md); padding:18px; box-shadow:var(--shadow-sm); }
+  .soft-title{ font-size:13px; font-weight:800; letter-spacing:.02em; color:var(--ink-soft); text-transform:uppercase; }
+
+  /* sobriety ring */
+  .ring-wrap{ position:relative; width:178px; height:178px; margin:0 auto; }
+  .ring-wrap .ctr{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .ring-wrap .ctr .big{ font-family:var(--font-display); font-size:50px; font-weight:500; line-height:1; color:var(--charcoal); }
+  .ring-wrap .ctr .lab{ font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--rose-deep); font-weight:800; margin-top:6px; }
+
+  .quick{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .quick .q{ background:var(--white); border:1px solid var(--line); border-radius:var(--r-sm); padding:14px; display:flex; gap:11px; align-items:center; box-shadow:var(--shadow-sm); }
+  .quick .q .ic{ width:38px; height:38px; border-radius:11px; display:grid; place-items:center; flex:none; }
+  .quick .q b{ font-size:13.5px; display:block; }
+  .quick .q span{ font-size:11px; color:var(--ink-faint); }
+
+  .moodset{ display:flex; justify-content:space-between; gap:8px; }
+  .moodset .m{ flex:1; aspect-ratio:1; border-radius:14px; background:var(--white); border:1px solid var(--line); display:grid; place-items:center; font-size:24px; }
+  .moodset .m.sel{ background:var(--rose-tint); border-color:var(--rose-soft); transform:scale(1.06); box-shadow:var(--shadow-sm); }
+
+  .listrow{ display:flex; align-items:center; gap:14px; padding:13px 0; border-top:1px solid var(--line); }
+  .listrow:first-child{ border-top:0; }
+  .listrow .ic{ width:42px; height:42px; border-radius:13px; display:grid; place-items:center; flex:none; }
+  .listrow .tx{ flex:1; }
+  .listrow .tx b{ font-size:14.5px; display:block; }
+  .listrow .tx span{ font-size:12px; color:var(--ink-faint); }
+
+  .progress-track{ height:8px; border-radius:99px; background:var(--sand); overflow:hidden; }
+  .progress-track > i{ display:block; height:100%; border-radius:99px; background:linear-gradient(90deg,var(--rose),var(--rose-deep)); }
+
+  /* onboarding hero bg */
+  .hero-bg{ position:absolute; inset:0; background:
+      radial-gradient(120% 80% at 50% 0%, #fff 0%, var(--rose-wash) 45%, var(--rose-tint) 100%); }
+  .blob{ position:absolute; border-radius:50%; filter:blur(6px); opacity:.6; }
+
+  .dots{ display:flex; gap:7px; justify-content:center; }
+  .dots i{ width:7px; height:7px; border-radius:99px; background:var(--rose-soft); }
+  .dots i.on{ width:22px; background:var(--rose-deep); }
+
+  .field{ background:var(--white); border:1.5px solid var(--line); border-radius:15px; padding:14px 16px; display:flex; align-items:center; gap:11px; }
+  .field input{ border:0; outline:0; font-family:var(--font-body); font-size:14.5px; width:100%; background:transparent; color:var(--ink); }
+  .field .lab{ font-size:11px; color:var(--ink-faint); font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+
+  .sos-screen{ background:linear-gradient(180deg,#7C4A40,#5E342C); }
+
+  .seg{ display:flex; background:var(--sand); border-radius:13px; padding:4px; }
+  .seg b{ flex:1; text-align:center; font-size:12.5px; font-weight:800; padding:9px; border-radius:10px; color:var(--ink-soft); }
+  .seg b.on{ background:#fff; color:var(--charcoal); box-shadow:var(--shadow-sm); }
+
+  .post{ background:var(--white); border:1px solid var(--line); border-radius:var(--r-md); padding:16px; box-shadow:var(--shadow-sm); }
+  .post .ph{ display:flex; align-items:center; gap:11px; margin-bottom:11px; }
+  .post .ph img{ width:38px; height:38px; border-radius:50%; }
+  .post .ph b{ font-size:13.5px; display:block; }
+  .post .ph span{ font-size:11px; color:var(--ink-faint); }
+  .post .actions{ display:flex; gap:18px; margin-top:13px; color:var(--ink-faint); font-size:12px; font-weight:700; }
+
+  .footer{ text-align:center; margin-top:110px; color:var(--ink-faint); font-size:13px; }
+  .footer .lotus{ width:38px; margin:0 auto 14px; opacity:.8; }
+
+  @media (max-width:520px){
+    .wrap{ padding:0 14px 80px; }
+    .ds-grid{ grid-template-columns:1fr; }
+    .panel{ grid-column:auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ reusable inline SVG defs ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- Lotus mark from the Shanti logo -->
+    <g id="lotus-mark">
+      <path d="M92.6734 26.327C91.7215 26.0125 90.7347 25.6979 89.7478 25.4589C82.7619 23.7091 75.4112 24.0329 68.6094 26.39C61.8075 28.7471 55.8544 33.0336 51.4898 38.7168C50.0019 36.4746 48.9704 33.9657 48.4532 31.3314C48.3961 31.0168 48.3389 30.7023 48.2913 30.3877C48.1993 29.7587 48.1327 29.0918 48.0946 28.4219C48.0946 28.1073 48.0756 27.7928 48.0756 27.4594V27.3965C48.0805 23.6137 49.1299 19.9045 51.11 16.6709C53.09 13.4373 55.9253 10.8026 59.3083 9.05249C60.1825 8.59395 61.0905 8.20175 62.0245 7.87925C64.101 7.14375 66.2835 6.74442 68.4881 6.69658C68.8415 8.09006 69.0185 9.52176 69.0148 10.9586C69.023 14.4987 67.9548 17.9592 65.9496 20.8886C65.9306 20.9075 65.9211 20.9264 65.902 20.9452C65.7677 21.1609 65.6936 21.408 65.6872 21.6614C65.6808 21.9147 65.7424 22.1652 65.8657 22.3872C65.989 22.6092 66.1695 22.7948 66.3889 22.925C66.6082 23.0552 66.8585 23.1253 67.1141 23.1282C67.3259 23.1286 67.5351 23.083 67.727 22.9944C67.9189 22.9058 68.0889 22.7764 68.2247 22.6155C68.2305 22.6109 68.2351 22.6052 68.2384 22.5987C68.2417 22.5921 68.2435 22.585 68.2438 22.5777C68.2724 22.5422 68.2979 22.5043 68.3199 22.4645C68.3441 22.4436 68.3636 22.4178 68.377 22.389C70.661 19.0099 71.8763 15.0323 71.8674 10.9649C71.8727 9.58294 71.7334 8.20417 71.4518 6.85071C71.2542 5.85752 70.9772 4.88147 70.6236 3.93178C70.0778 3.8846 69.5225 3.86572 68.9577 3.86572C68.4786 3.86572 68.0058 3.8846 67.5298 3.9129C65.4419 4.03521 63.3795 4.43076 61.3962 5.08928C60.4905 5.39101 59.6046 5.74817 58.7435 6.15872C55.8234 7.54637 53.2198 9.51017 51.0919 11.9299C48.9641 14.3496 47.3568 17.1744 46.3684 20.2312C45.3766 17.1729 43.7655 14.3474 41.6338 11.9277C39.5021 9.50793 36.8947 7.5449 33.9712 6.15872C33.1099 5.74871 32.224 5.39156 31.3185 5.08928C29.3322 4.42991 27.2665 4.03434 25.1753 3.9129C24.7057 3.8846 24.2234 3.86572 23.7538 3.86572C23.189 3.86572 22.6337 3.8846 22.0911 3.93178C21.7299 4.88083 21.4455 5.8569 21.2407 6.85071C20.9554 8.2059 20.8129 9.5868 20.8155 10.9712C20.8093 15.0894 22.0591 19.1133 24.4011 22.5148C24.5319 22.7094 24.7094 22.8687 24.9176 22.9785C25.1259 23.0883 25.3583 23.1451 25.5942 23.1439C25.9746 23.1414 26.3386 22.9898 26.6067 22.7223C26.8748 22.4548 27.0253 22.093 27.0253 21.7159C27.027 21.455 26.952 21.1992 26.8095 20.9798C26.7808 20.9444 26.7554 20.9065 26.7333 20.8666C25.3368 18.8138 24.3907 16.4932 23.9561 14.0549C23.5216 11.6167 23.6083 9.1152 24.2107 6.71231C26.4115 6.75369 28.591 7.14776 30.6648 7.87925C31.6027 8.20231 32.5148 8.59448 33.3937 9.05249C36.7778 10.8035 39.6135 13.4398 41.5931 16.6752C43.5728 19.9107 44.6207 23.6218 44.6232 27.4059V27.4594C44.6232 27.7739 44.6232 28.1136 44.5947 28.4313C44.5681 29.0895 44.5056 29.7457 44.4075 30.3972C44.3599 30.7117 44.3059 31.0263 44.2488 31.3408C43.7271 33.973 42.6912 36.4786 41.1995 38.7168C36.8354 33.0338 30.8828 28.7475 24.0815 26.3904C17.2802 24.0332 9.9301 23.7093 2.94463 25.4589C1.9578 25.7105 0.977313 25.9999 0.0190384 26.327C0.0190384 26.6793 0 27.0347 0 27.3902C0 28.0413 0.0190385 28.6829 0.0761542 29.3183C0.455421 33.8504 2.1514 38.1764 4.95892 41.7731C7.76644 45.3697 11.5652 48.0829 15.8956 49.5843C20.2261 51.0857 24.9026 51.3111 29.3596 50.2331C33.8165 49.1552 37.8629 46.8201 41.0091 43.5103C42.7556 46.3979 44.0552 49.5289 44.8644 52.7987C44.9301 53.1368 45.1125 53.4416 45.3803 53.6609C45.6481 53.8801 45.9846 54 46.332 54C46.6793 54 47.0158 53.8801 47.2836 53.6609C47.5514 53.4416 47.7338 53.1368 47.7995 52.7987C48.6083 49.5262 49.9136 46.3944 51.6707 43.5103C54.8169 46.8201 58.8633 49.1552 63.3202 50.2331C67.7771 51.3111 72.4537 51.0857 76.7841 49.5843C81.1146 48.0829 84.9133 45.3697 87.7209 41.7731C90.5284 38.1764 92.2243 33.8504 92.6036 29.3183C92.6607 28.6892 92.6798 28.0413 92.6798 27.3902C92.6925 27.0347 92.6829 26.6667 92.6734 26.327ZM23.7474 48.09C18.3904 48.0839 13.2401 46.0394 9.35959 42.3783C5.47912 38.7172 3.16464 33.7191 2.89386 28.4156C5.85454 27.5913 8.9159 27.1763 11.9911 27.1826C17.3421 27.1818 22.6169 28.4399 27.3819 30.8535C32.1468 33.2672 36.2658 36.7674 39.4003 41.0664C37.4472 43.2756 35.04 45.0453 32.3404 46.2567C29.6407 47.4681 26.7108 48.0932 23.7474 48.09ZM46.3621 47.9296C45.465 45.577 44.3273 43.3215 42.9669 41.1985C44.4507 39.1801 45.5971 36.9381 46.3621 34.5585C47.1255 36.9387 48.2721 39.1809 49.7573 41.1985C48.3852 43.3174 47.2419 45.5735 46.3462 47.9296H46.3621ZM68.9736 48.09C66.0091 48.0915 63.0784 47.4656 60.3774 46.2544C57.6764 45.0432 55.2673 43.2744 53.3112 41.0664C56.4489 36.7677 60.5704 33.268 65.3372 30.8545C70.1041 28.441 75.3804 27.1826 80.7331 27.1826C83.8073 27.1764 86.8676 27.5913 89.8272 28.4156C89.5562 33.7218 87.2395 38.7222 83.3557 42.3837C79.4718 46.0452 74.3176 48.088 68.9577 48.09H68.9736Z"/>
+      <path d="M46.3463 7.73768C48.5018 7.73768 50.2492 6.00555 50.2492 3.86884C50.2492 1.73214 48.5018 0 46.3463 0C44.1908 0 42.4434 1.73214 42.4434 3.86884C42.4434 6.00555 44.1908 7.73768 46.3463 7.73768Z"/>
+    </g>
+  </defs>
+</svg>
+
+<div class="wrap">
+
+  <!-- ════════════════════ MASTHEAD ════════════════════ -->
+  <header class="masthead">
+    <div class="brand-lockup">
+      <svg class="lotus" viewBox="0 0 93 54" fill="var(--rose)"><use href="#lotus-mark"/></svg>
+      <div class="wordmark">
+        <span class="w1">SHANTI</span>
+        <span class="w2">Recovery Wellness</span>
+      </div>
+    </div>
+    <p class="lede">A complete mobile UI design for a recovery &amp; wellness companion — built around the calm, grounded palette of the Shanti logo. Soft sand canvases, the dusty-rose lotus, and a warm serif voice to make every screen feel like a deep breath.</p>
+    <div class="meta">
+      <span class="chip dot">17 screens · 4 flows</span>
+      <span class="chip">Fraunces × Mulish</span>
+      <span class="chip">iOS · 375pt</span>
+      <span class="chip">#C8A297 · #333132</span>
+    </div>
+  </header>
+
+  <!-- ════════════════════ DESIGN SYSTEM ════════════════════ -->
+  <section class="section" id="system">
+    <div class="section-head">
+      <span class="num">00</span>
+      <div><h2>The Foundations</h2><p>Color, type and components — derived directly from the logo.</p></div>
+      <span class="hr"></span>
+    </div>
+
+    <div class="ds-grid">
+      <!-- palette -->
+      <div class="panel" style="grid-column:span 4">
+        <h3>Palette</h3>
+        <div class="swatches">
+          <div class="sw"><span class="dot" style="background:var(--rose)"></span><span class="info"><b>Lotus Rose</b><span>#C8A297 · primary</span></span></div>
+          <div class="sw"><span class="dot" style="background:var(--rose-deep)"></span><span class="info"><b>Clay</b><span>#A9786B · emphasis</span></span></div>
+          <div class="sw"><span class="dot" style="background:var(--charcoal)"></span><span class="info"><b>Charcoal</b><span>#333132 · ink &amp; CTAs</span></span></div>
+          <div class="sw"><span class="dot" style="background:var(--sage)"></span><span class="info"><b>Sage</b><span>#8E9E86 · calm accent</span></span></div>
+          <div class="sw"><span class="dot" style="background:var(--sand)"></span><span class="info"><b>Sand</b><span>#F1E8E1 · surfaces</span></span></div>
+          <div class="sw"><span class="dot" style="background:var(--cream);box-shadow:inset 0 0 0 1px var(--line)"></span><span class="info"><b>Cream</b><span>#FAF5F1 · canvas</span></span></div>
+        </div>
+      </div>
+
+      <!-- type -->
+      <div class="panel" style="grid-column:span 4">
+        <h3>Typography</h3>
+        <div class="type-row">
+          <small>Display · Fraunces</small>
+          <div style="font-family:var(--font-display);font-size:34px;font-weight:500;color:var(--charcoal);line-height:1.1;margin-top:4px">Be here, now</div>
+        </div>
+        <div class="type-row">
+          <small>Heading · Fraunces 500</small>
+          <div style="font-family:var(--font-display);font-size:21px;color:var(--charcoal);margin-top:4px">One day at a time</div>
+        </div>
+        <div class="type-row">
+          <small>Body · Mulish 500</small>
+          <div style="font-size:14.5px;color:var(--ink-soft);margin-top:5px;line-height:1.6">Gentle, humanist and highly legible for long passages of reflective writing.</div>
+        </div>
+        <div class="type-row">
+          <small>Label · Mulish 800 · tracked</small>
+          <div style="font-size:12px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--rose-deep);margin-top:6px">Daily Check-In</div>
+        </div>
+      </div>
+
+      <!-- components -->
+      <div class="panel" style="grid-column:span 4">
+        <h3>Components</h3>
+        <div class="comp-stack">
+          <button class="btn btn-primary">Continue</button>
+          <button class="btn btn-rose">I stayed sober today</button>
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-ghost" style="flex:1">Skip</button>
+            <button class="btn btn-outline" style="flex:1">Later</button>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <span class="pill" style="background:var(--rose-tint);color:var(--rose-deep)">Calm</span>
+            <span class="pill" style="background:var(--sage-soft);color:#56654e">Grateful</span>
+            <span class="pill" style="background:var(--sand);color:var(--ink-soft)">+ Add tag</span>
+          </div>
+          <div class="progress-track" style="margin-top:2px"><i style="width:68%"></i></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ 01 · ONBOARDING & AUTH ════════════════════ -->
+  <section class="section" id="onboarding">
+    <div class="section-head">
+      <span class="num">01</span>
+      <div><h2>Onboarding &amp; Auth</h2><p>A soft landing — splash, intro, and a frictionless way in.</p></div>
+      <span class="hr"></span>
+    </div>
+
+    <div class="gallery">
+
+      <!-- 1. SPLASH -->
+      <div class="device">
+        <div class="label"><b>Splash</b><span>App launch</span></div>
+        <div class="phone"><div class="bezel-notch"></div><div class="screen">
+          <div class="hero-bg"></div>
+          <div class="status on-dark" style="color:var(--charcoal)"><span>9:41</span><span class="sig">●●● 5G ▮</span></div>
+          <div class="body" style="display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative">
+            <div class="blob" style="width:200px;height:200px;background:var(--rose-soft);top:120px;left:-40px"></div>
+            <div class="blob" style="width:160px;height:160px;background:var(--sage-soft);bottom:120px;right:-30px"></div>
+            <div style="position:relative;text-align:center">
+              <svg style="width:110px" viewBox="0 0 93 54" fill="var(--rose-deep)"><use href="#lotus-mark"/></svg>
+              <div style="font-family:var(--font-display);font-weight:500;letter-spacing:.2em;font-size:38px;color:var(--charcoal);margin-top:24px">SHANTI</div>
+              <div style="font-weight:800;letter-spacing:.4em;font-size:10px;color:var(--rose-deep);margin-top:10px;padding-left:.4em">RECOVERY WELLNESS</div>
+            </div>
+            <div style="position:absolute;bottom:54px;font-style:italic;font-family:var(--font-display);color:var(--ink-soft);font-size:15px">peace begins within</div>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- 2. INTRO -->
+      <div class="device">
+        <div class="label"><b>Welcome</b><span>Intro carousel</span></div>
+        <div class="phone"><div class="bezel-notch"></div><div class="screen">
+          <div class="status"><span>9:41</span><span class="sig">●●● 5G ▮</span></div>
+          <div class="body" style="display:flex;flex-direction:column">
+            <div style="flex:1;margin:6px 22px 0;border-radius:26px;background:
+                 radial-gradient(120% 90% at 50% 10%, #fff, var(--rose-wash) 60%, var(--rose-tint));
+                 display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden">
+              <div class="blob" style="width:150px;height:150px;background:var(--sage-soft);top:30px;right:-20px;opacity:.7"></div>
+              <svg style="width:120px;position:relative" viewBox="0 0 93 54" fill="var(--rose-deep)"><use href="#lotus-mark"/></svg>
+            </div>
+            <div class="pad" style="text-align:center;padding-top:24px">
+              <div class="dots" style="margin-bottom:20px"><i class="on"></i><i></i><i></i></div>
+              <h1 style="font-family:var(--font-display);font-weight:500;font-size:26px;margin:0;color:var(--charcoal)">Recovery, gently guided</h1>
+              <p style="color:var(--ink-soft);font-size:14px;line-height:1.6;margin:12px 6px 22px">Track your journey, find calm in hard moments, and lean on a community that understands.</p>
+              <button class="btn btn-primary" style="width:100%">Get started</button>
+              <div style="margin-top:14px;font-size:13px;color:var(--ink-faint)">Already healing? <b style="color:var(--rose-deep)">Sign in</b></div>
+            </div>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- 3. SIGN UP -->
+      <div class="device">
+        <div class="label"><b>Create account</b><span>Sign up</span></div>
+        <div class="phone"><div class="bezel-notch"></div><div class="screen">
+          <div class="status"><span>9:41</span><span class="sig">●●● 5G ▮</span></div>
+          <div class="body"><div class="pad" style="padding-top:18px">
+            <div style="font-size:24px;color:var(--ink-faint)">&larr;</div>
+            <h1 style="font-family:var(--font-display);font-weight:500;font-size:27px;margin:14px 0 4px;color:var(--charcoal)">Begin your<br>journey</h1>
+            <p style="color:var(--ink-soft);font-size:13.5px;margin:0 0 22px">It’s private, and it’s yours.</p>
+            <div style="display:flex;flex-direction:column;gap:13px">
+              <div class="field"><div><div class="lab">Name</div><input value="Maya" /></div></div>
+              <div class="field"><div style="width:100%"><div class="lab">Email</div><input value="maya@email.com" /></div></div>
+              <div class="field"><div style="width:100%"><div class="lab">Password</div><input type="password" value="123456" /></div><span style="color:var(--ink-faint)">👁</span></div>
+            </div>
+            <button class="btn btn-primary" style="width:100%;margin-top:20px">Create account</button>
+            <div style="display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--ink-faint);font-size:12px"><span style="flex:1;height:1px;background:var(--line)"></span>or continue with<span style="flex:1;height:1px;background:var(--line)"></span></div>
+            <div style="display:flex;gap:10px">
+              <button class="btn btn-outline" style="flex:1"> Apple</button>
+              <button class="btn btn-outline" style="flex:1">G Google</button>
+            </div>
+          </div></div>
+        </div></div>
+      </div>
+
+      <!-- 4. LOG IN -->
+      <div class="device">
+        <div class="label"><b>Sign in</b><span>Returning user</span></div>
+        <div class="phone"><div class="bezel-notch"></div><div class="screen">
+          <div class="status"><span>9:41</span><span class="sig">●●● 5G ▮</span></div>
+          <div class="body"><div class="pad" style="padding-top:38px;text-align:center">
+            <svg style="width:64px" viewBox="0 0 93 54" fill="var(--rose)"><use href="#lotus-mark"/></svg>
+            <h1 style="font-family:var(--font-display);font-weight:500;font-size:27px;margin:20px 0 4px;color:var(--charcoal)">Welcome back</h1>
+            <p style="color:var(--ink-soft);font-size:13.5px;margin:0 0 26px">We saved your place.</p>
+            <div style="display:flex;flex-direction:column;gap:13px;text-align:left">
+              <div class="field"><div style="width:100%"><div class="lab">Email</div><input value="maya@email.com" /></div></div>
+              <div class="field"><div style="width:100%"><div class="lab">Password</div><input type="password" value="123456" /></div></div>
+            </div>
+            <div style="text-align:right;margin:12px 0 18px;font-size:12.5px;color:var(--rose-deep);font-weight:700">Forgot password?</div>
+            <button class="btn btn-rose" style="width:100%">Sign in</button>
+            <div style="margin-top:54px;display:flex;align-items:center;justify-content:center;gap:9px;color:var(--ink-soft);font-size:13px">
+              <span style="font-size:18px">☺</span> Sign in with Face ID
+            </div>
+          </div></div>
+        </div></div>
+      </div>
+
+      <!-- 5. GOAL SETUP -->
+      <div class="device">
+        <div class="label"><b>Set intention</b><span>Personalisation</span></div>
+        <div class="phone"><div class="bezel-notch"></div><div class="screen">
+          <div class="status"><span>9:41</span><span class="sig">●●● 5G ▮</span></div>
+          <div class="body"><div class="pad" style="padding-top:18px">
+            <div class="progress-track" style="margin-bottom:22px"><i style="width:40%"></i></div>
+            <small style="font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--rose-deep);font-size:11px">Step 2 of 5</small>
+            <h1 style="font-family:var(--font-display);font-weight:500;font-size:25px;margin:8px 0 18px;color:var(--charcoal)">What brings you to Shanti?</h1>
+            <div style="display:flex;flex-direction:column;gap:11px">
+              <div class="card" style="display:flex;align-items:center;gap:13px;border-color:var(--rose-soft);background:var(--rose-wash)">
+                <div style="width:34px;height:34px;border-radius:10px;background:var(--rose);display:grid;place-items:center;color:#fff">✓</div>
+                <b style="font-size:14.5px">Stay sober &amp; track time</b>
+              </div>
+              <div class="card" style="display:flex;align-items:center;gap:13px">
+                <div style="width:34px;height:34px;border-radius:10px;background:var(--sand)"></div>
+                <b style="font-size:14.5px">Manage stress &amp; anxiety</b>
+              </div>
+              <div class="card" style="display:flex;align-items:center;gap:13px">
+                <div style="width:34px;height:34px;border-radius:10px;background:var(--sand)"></div>
+                <b style="font-size:14.5px">Build healthier habits</b>
+              </div>
+              <div class="card" style="display:flex;align-items:center;gap:13px">
+                <div style="width:34px;height:34px;border-radius:10px;background:var(--sand)"></div>
+                <b style="font-size:14.5px">Find a support community</b>
+              </div>
+            </div>
+            <button class="btn btn-primary" style="width:100%;margin-top:22px">Continue</button>
+          </div></div>
+        </div></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════════════════ 02 · HOME & DASHBOARD ════════════════════ -->
+  <section class="section" id="home">
+    <div class="section-head">
+      <span class="num">02</span>
+      <div><h2>Home &amp; Daily Check-In</h2><p>The anchor — sobriety time, mood, and gentle next steps.</p></div>
+      <span class="hr"></span>
+    </div>
+
+    <div class="gallery">
+
+      <!-- 6. HOME DASHBOARD -->
+      <div class="device">
+        <div class="label"><b>Home</b><span>Dashboard</span></div>
+        <div class="phone"><div class="bezel-notch"></div><div class="screen">
+          <div class="status"><span>9:41</span><span class="sig">●●● 5G ▮</span></div>
+          <div class="body"><div class="pad" style="padding-top:6px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div class="greet"><small>Tuesday, 30 June</small><h1>Good morning, Maya</h1></div>
+              <img class="avatar" src="https://i.pravatar.cc/120?img=5" alt="" />
+            </div>
+
+            <div class="card" style="margin-top:18px;text-align:center;background:
+                 radial-gradient(120% 100% at 50% 0%, #fff, var(--rose-wash));border-color:var(--rose-soft)">
+              <div class="ring-wrap">
+                <svg viewBox="0 0 180 180" style="width:178px;height:178px;transform:rotate(-90deg)">
+                  <circle cx="90" cy="90" r="78" fill="none" stroke="var(--sand)" stroke-width="13"/>
+                  <circle cx="90" cy="90" r="78" fill="none" stroke="url(#rg)" stroke-width="13" stroke-linecap="round"
+                          stroke-dasharray="490" stroke-dashoffset="120"/>
+                  <defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--rose)"/><stop offset="1" stop-color="var(--rose-deep)"/></linearGradient></defs>
+                </svg>
+                <div class="ctr"><span class="big">127</span><span class="lab">Days Sober</span></div>
+              </div>
+              <div style="display:flex;justify-content:center;gap:22px;margin-top:6px;color:var(--ink-soft);font-size:12.5px;font-weight:700">
+                <span>🔥 18 wk streak</span><span>·</span><span>Next: 6 months</span>
+              </div>
+            </div>
+
+            <button class="btn btn-rose" style="width:100%;margin-top:16px">I stayed sober today</button>
+
+            <div style="margin-top:18px" class="soft-title">Quick tools</div>
+            <div class="quick" style="margin-top:11px">
+              <div class="q"><div class="ic" style="background:var(--sage-soft)">🌬️</div><div><b>Breathe</b><span>3 min</span></div></div>
+              <div class="q"><div class="ic" style="background:var(--rose-tint)">📔</div><div><b>Journal</b><span>Reflect</span></div></div>
+              <div class="q"><div class="ic" style="background:#FBEAD2">🧘</div><div><b>Meditate</b><span>Library</span></div></div>
+              <div class="q"><div class="ic" style="background:#F3DAD3">🆘</div><div><b>Urge help</b><span>SOS</span></div></div>
+            </div>
+          </div></div>
+          <div class="tabbar">
+            <div class="tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5m5 14V9m5 10V7m5 12V11"/></svg>Progress</div>
+            <div class="tab center"><div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg>Community</div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>Profile</div>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- 7. DAILY CHECK-IN -->
+      <div class="device">
+        <div class="label"><b>Daily check-in</b><span>Mood &amp; note</span></div>
+        <div class="phone"><div class="bezel-notch"></div><div class="screen">
+          <div class="status"><span>9:41</span><span class="sig">●●● 5G ▮</span></div>
+          <div class="body"><div class="pad" style="padding-top:16px">
+            <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:22px;color:var(--ink-faint)">&larr;</div><small style="color:var(--ink-faint);font-weight:700">Evening check-in</small><div style="width:22px"></div></div>
+            <h1 style="font-family:var(--font-display);font-weight:500;font-size:25px;margin:18px 0 4px;color:var(--charcoal)">How are you feeling?</h1>
+            <p style="color:var(--ink-soft);font-size:13px;margin:0 0 18px">There’s no wrong answer.</p>
+            <div class="moodset">
+              <div class="m">😣</div><div class="m">😕</div><div class="m sel">🙂</div><div class="m">😊</div><div class="m">🥰</div>
+            </div>
+            <div style="text-align:center;margin-top:10px;font-family:var(--font-display);font-size:18px;color:var(--rose-deep)">Content</div>
+
+            <div class="soft-title" style="margin-top:22px">What’s on your mind?</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:11px">
+              <span class="pill" style="background:var(--rose-tint);color:var(--rose-deep)">Calm ✓</span>
+              <span class="pill" style="background:var(--sage-soft);color:#56654e">Grateful ✓</span>
+              <span class="pill" style="background:var(--sand);color:var(--ink-soft)">Tired</span>
+              <span class="pill" style="background:var(--sand);color:var(--ink-soft)">Anxious</span>
+              <span class="pill" style="background:var(--sand);color:var(--ink-soft)">Hopeful</span>
+            </div>
+            <div class="card" style="margin-top:16px;color:var(--ink-faint);font-size:13.5px;font-style:italic;font-family:var(--font-display)">“Today I noticed I felt steadier after my morning walk…”</div>
+            <button class="btn btn-primary" style="width:100%;margin-top:18px">Save check-in</button>
+          </div></div>
+        </div></div>
+      </div>
+
+      <!-- 8. MOOD TRENDS -->
+      <div class="device">
+        <div class="label"><b>Mood trends</b><span>Insight</span></div>
+        <div class="phone"><div class="bezel-notch"></div><div class="screen">
+          <div class="status"><span>9:41</span><span class="sig">●●● 5G ▮</span></div>
+          <div class="body"><div class="pad" style="padding-top:16px">
+            <div class="greet"><small>This week</small><h1 style="font-size:24px">Your mood</h1></div>
+            <div class="seg" style="margin-top:16px"><b>Week</b><b class="on">Month</b><b>Year</b></div>
+
+            <div class="card" style="margin-top:16px">
+              <div style="display:flex;align-items:flex-end;gap:9px;height:120px">
+                <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%"><div style="height:40%;background:var(--rose-soft);border-radius:8px"></div></div>
+                <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%"><div style="height:62%;background:var(--rose);border-radius:8px"></div></div>
+                <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%"><div style="height:50%;background:var(--rose-soft);border-radius:8px"></div></div>
+                <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%"><div style="height:78%;background:var(--rose-deep);border-radius:8px"></div></div>
+                <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%"><div style="height:70%;background:var(--rose);border-radius:8px"></div></div>
+                <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%"><div style="height:88%;background:var(--rose-deep);border-radius:8px"></div></div>
+                <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%"><div style="height:84%;background:var(--rose);border-radius:8px"></div></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:10px;color:var(--ink-faint);font-weight:700">
+                <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:14px;display:flex;gap:13px;align-items:center;background:var(--sage-soft);border-color:#cdd7c5">
+              <div style="font-size:26px">🌿</div>
+              <div><b style="font-size:13.5px">Mood is trending up</b><div style="font-size:12px;color:#56654e;margin-top:2px">You feel best on days you journal. Keep going.</div></div>
+            </div>
+            <div style="margin-top:16px" class="soft-title">Strongest factor</div>
+            <div class="card" style="margin-top:11px;display:flex;justify-content:space-between;align-items:center">
+              <div style="display:flex;gap:12px;align-items:center"><div style="font-size:22px">🌙</div><b style="font-size:14px">Quality sleep</b></div>
+              <span style="color:var(--rose-deep);font-weight:800">+34%</span>
+            </div>
+          </div></div>
+        </div></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════════════════ 03 · RECOVERY TOOLS ════════════════════ -->
+  <section class="section" id="tools">
+    <div class="section-head">
+      <span class="num">03</span>
+      <div><h2>Recovery Tools</h2><p>Breathe, meditate, journal, track milestones — and an instant lifeline.</p></div>
+      <span class="hr"></span>
+    </div>
+
+    <div class="gallery">
+
+      <!-- 9. TOOLS HUB -->
+      <div class="device">
+        <div class="label"><b>Toolkit</b><span>Tools hub</span></div>
+        <div class="phone"><div class="bezel-notch"></div><div class="screen">
+          <div class="status"><span>9:41</span><span class="sig">●●● 5G ▮</span></div>
+          <div class="body"><div class="pad" style="padding-top:8px">
+            <div class="greet"><small>For this moment</small><h1>Your toolkit</h1></div>
+
+            <div class="card" style="margin-top:16px;background:linear-gradient(135deg,var(--charcoal),#4d4849);color:#fff;border:0">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start">
+                <div><div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.7;font-weight:800">Featured</div>
+                  <div style="font-family:var(--font-display);font-size:20px;margin-top:8px">Riding the urge wave</div>
+                  <div style="font-size:12.5px;opacity:.8;margin-top:4px">Guided · 8 min</div></div>
+                <div style="width:46px;height:46px;border-radius:50%;background:var(--rose);display:grid;place-items:center">▶</div>
+              </div>
+            </div>
+
+            <div class="quick" style="margin-top:16px">
+              <div class="q" style="flex-direction:column;align-items:flex-start;gap:8px"><div class="ic" style="background:var(--sage-soft);width:42px;height:42px">🌬️</div><div><b>Breathwork</b><span>5 exercises</span></div></div>
+              <div class="q" style="flex-direction:column;align-items:flex-start;gap:8px"><div class="ic" style="background:var(--rose-tint);width:42px;height:42px">🧘</div><div><b>Meditations</b><span>40+ tracks</span></div></div>
+              <div class="q" style="flex-direction:column;align-items:flex-start;gap:8px"><div class="ic" style="background:#FBEAD2;width:42px;height:42px">📔</div><div><b>Journal</b><span>Prompts</span></div></div>
+              <div class="q" style="flex-direction:column;align-items:flex-start;gap:8px"><div class="ic" style="background:#EFE2DD;width:42px;height:42px">📚</div><div><b>Learn</b><span>Articles</span></div></div>
+            </div>
+
+            <div class="card" style="margin-top:16px;display:flex;gap:13px;align-items:center;border-color:var(--rose-soft);background:var(--rose-wash)">
+              <div style="width:42px;height:42px;border-radius:50%;background:var(--rose-deep);display:grid;place-items:center;color:#fff;font-size:20px">🆘</div>
+              <div style="flex:1"><b style="font-size:14px;color:var(--rose-deep)">In crisis right now?</b><div style="font-size:12px;color:var(--ink-soft)">Open the SOS lifeline</div></div>
+              <div style="color:var(--rose-deep);font-size:20px">›</div>
+            </div>
+          </div></div>
+          <div class="tabbar">
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5m5 14V9m5 10V7m5 12V11"/></svg>Progress</div>
+            <div class="tab center"><div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Community</div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>Profile</div>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- 10. BREATHE / MEDITATE PLAYER -->
+      <div class="device">
+        <div class="label"><b>Breathe</b><span>Player</span></div>
+        <div class="phone"><div class="bezel-notch"></div><div class="screen">
+          <div class="status on-dark"><span>9:41</span><span class="sig">●●● 5G ▮</span></div>
+          <div class="body" style="background:linear-gradient(180deg,#9C6F62,#6E463C);color:#fff;display:flex;flex-direction:column">
+            <div class="pad" style="padding-top:6px;display:flex;justify-content:space-between;align-items:center;color:#fff">
+              <span style="font-size:22px">⌄</span><small style="font-weight:800;letter-spacing:.12em;opacity:.85">BOX BREATHING</small><span style="font-size:18px">⋯</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative">
+              <div style="position:absolute;width:230px;height:230px;border-radius:50%;background:rgba(255,255,255,.06)"></div>
+              <div style="position:absolute;width:175px;height:175px;border-radius:50%;background:rgba(255,255,255,.1)"></div>
+              <div style="width:128px;height:128px;border-radius:50%;background:radial-gradient(circle,#fff,var(--rose-soft));display:flex;align-items:center;justify-content:center;box-shadow:0 0 50px rgba(255,255,255,.4)">
+                <div style="text-align:center;color:var(--rose-deep)"><div style="font-family:var(--font-display);font-size:24px">Breathe in</div><div style="font-size:13px;opacity:.8;margin-top:2px">4 seconds</div></div>
+              </div>
+            </div>
+            <div class="pad" style="text-align:center;padding-bottom:30px">
+              <div style="font-size:13px;opacity:.85">Round 3 of 6 · 2:40 left</div>
+              <div style="height:5px;background:rgba(255,255,255,.2);border-radius:9px;margin:14px 0 22px;overflow:hidden"><div style="width:55%;height:100%;background:#fff;border-radius:9px"></div></div>
+              <div style="display:flex;align-items:center;justify-content:center;gap:30px">
+                <span style="font-size:22px;opacity:.8">↺</span>
+                <div style="width:66px;height:66px;border-radius:50%;background:#fff;color:var(--rose-deep);display:grid;place-items:center;font-size:24px">❚❚</div>
+                <span style="font-size:22px;opacity:.8">🔊</span>
+              </div>
+            </div>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- 11. JOURNAL -->
+      <div class="device">
+        <div class="label"><b>Journal</b><span>Guided writing</span></div>
+        <div class="phone"><div class="bezel-notch"></div><div class="screen">
+          <div class="status"><span>9:41</span><span class="sig">●●● 5G ▮</span></div>
+          <div class="body"><div class="pad" style="padding-top:16px">
+            <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:22px;color:var(--ink-faint)">&larr;</div><small style="color:var(--ink-faint);font-weight:700">30 June · Evening</small><b style="color:var(--rose-deep);font-size:13px">Save</b></div>
+            <div class="card" style="margin-top:16px;background:var(--rose-wash);border-color:var(--rose-soft)">
+              <small style="font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--rose-deep);font-size:10px">Today’s prompt</small>
+              <div style="font-family:var(--font-display);font-size:18px;margin-top:8px;color:var(--charcoal);line-height:1.4">What is one thing you’re proud of from today?</div>
+            </div>
+            <div style="margin-top:18px;font-family:var(--font-display);font-size:16px;line-height:1.85;color:var(--ink)">
+              I made it through the dinner without drinking.<span style="color:var(--ink-faint)"> My hands were shaky but I called Sam instead and we talked for twenty minutes. I’m proud that I reached out</span><span style="display:inline-block;width:2px;height:18px;background:var(--rose-deep);vertical-align:-3px;margin-left:1px"></span>
+            </div>
+          </div></div>
+          <div style="flex:none;border-top:1px solid var(--line);background:#fff;padding:11px 18px;display:flex;align-items:center;gap:16px;color:var(--ink-faint)">
+            <span style="font-size:18px">📷</span><span style="font-size:18px">🎙️</span><span style="font-size:18px">😊</span>
+            <span style="margin-left:auto;font-size:11px;font-weight:700">214 words</span>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- 12. PROGRESS / MILESTONES -->
+      <div class="device">
+        <div class="label"><b>Progress</b><span>Milestones</span></div>
+        <div class="phone"><div class="bezel-notch"></div><div class="screen">
+          <div class="status"><span>9:41</span><span class="sig">●●● 5G ▮</span></div>
+          <div class="body"><div class="pad" style="padding-top:8px">
+            <div class="greet"><small>Since 24 Feb 2026</small><h1>Your milestones</h1></div>
+
+            <div style="display:flex;gap:11px;margin-top:16px">
+              <div class="card" style="flex:1;text-align:center"><div style="font-family:var(--font-display);font-size:26px;color:var(--charcoal)">127</div><div style="font-size:11px;color:var(--ink-faint);font-weight:700">DAYS</div></div>
+              <div class="card" style="flex:1;text-align:center"><div style="font-family:var(--font-display);font-size:26px;color:var(--charcoal)">$1.9k</div><div style="font-size:11px;color:var(--ink-faint);font-weight:700">SAVED</div></div>
+              <div class="card" style="flex:1;text-align:center"><div style="font-family:var(--font-display);font-size:26px;color:var(--charcoal)">381</div><div style="font-size:11px;color:var(--ink-faint);font-weight:700">HRS BACK</div></div>
+            </div>
+
+            <div class="soft-title" style="margin-top:20px">Badges</div>
+            <div style="display:flex;gap:14px;margin-top:12px">
+              <div style="text-align:center;flex:1"><div style="width:52px;height:52px;border-radius:50%;background:var(--rose);display:grid;place-items:center;font-size:22px;margin:0 auto;box-shadow:var(--shadow-sm)">🌱</div><div style="font-size:10px;margin-top:6px;font-weight:700">1 week</div></div>
+              <div style="text-align:center;flex:1"><div style="width:52px;height:52px;border-radius:50%;background:var(--rose-deep);display:grid;place-items:center;font-size:22px;margin:0 auto;box-shadow:var(--shadow-sm)">🌿</div><div style="font-size:10px;margin-top:6px;font-weight:700">1 month</div></div>
+              <div style="text-align:center;flex:1"><div style="width:52px;height:52px;border-radius:50%;background:var(--gold);display:grid;place-items:center;font-size:22px;margin:0 auto;box-shadow:var(--shadow-sm)">🌸</div><div style="font-size:10px;margin-top:6px;font-weight:700">100 days</div></div>
+              <div style="text-align:center;flex:1;opacity:.4"><div style="width:52px;height:52px;border-radius:50%;background:var(--sand);display:grid;place-items:center;font-size:22px;margin:0 auto">🔒</div><div style="font-size:10px;margin-top:6px;font-weight:700">6 mo</div></div>
+            </div>
+
+            <div class="card" style="margin-top:20px">
+              <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700"><span>Next: 6 months</span><span style="color:var(--rose-deep)">71%</span></div>
+              <div class="progress-track" style="margin-top:10px"><i style="width:71%"></i></div>
+              <div style="font-size:11.5px;color:var(--ink-faint);margin-top:9px">53 days to go — you’ve got this.</div>
+            </div>
+          </div></div>
+        </div></div>
+      </div>
+
+      <!-- 13. SOS / CRAVINGS -->
+      <div class="device">
+        <div class="label"><b>SOS lifeline</b><span>Craving help</span></div>
+        <div class="phone"><div class="bezel-notch"></div><div class="screen sos-screen">
+          <div class="status on-dark"><span>9:41</span><span class="sig">●●● 5G ▮</span></div>
+          <div class="body" style="color:#fff;display:flex;flex-direction:column"><div class="pad" style="padding-top:8px;flex:1;display:flex;flex-direction:column">
+            <div style="display:flex;justify-content:space-between;align-items:center;color:#fff"><span style="font-size:22px">✕</span><small style="font-weight:800;letter-spacing:.14em">SOS LIFELINE</small><div style="width:18px"></div></div>
+            <div style="text-align:center;margin-top:26px">
+              <div style="font-family:var(--font-display);font-size:27px">Take a breath.<br>You’re safe.</div>
+              <p style="font-size:13.5px;opacity:.82;margin:12px 22px 0;line-height:1.6">This urge will pass. It always does. Let’s get through the next few minutes together.</p>
+            </div>
+            <div style="margin-top:24px;display:flex;flex-direction:column;gap:12px">
+              <button class="btn" style="background:#fff;color:#6E463C;width:100%;justify-content:flex-start;gap:13px"><span style="font-size:20px">🌬️</span> Start 60-second breathing</button>
+              <button class="btn" style="background:rgba(255,255,255,.14);color:#fff;width:100%;justify-content:flex-start;gap:13px;backdrop-filter:blur(6px)"><span style="font-size:20px">📞</span> Call my sponsor — Sam</button>
+              <button class="btn" style="background:rgba(255,255,255,.14);color:#fff;width:100%;justify-content:flex-start;gap:13px"><span style="font-size:20px">💬</span> Reach a counsellor now</button>
+              <button class="btn" style="background:rgba(255,255,255,.14);color:#fff;width:100%;justify-content:flex-start;gap:13px"><span style="font-size:20px">📝</span> Why I’m staying sober</button>
+            </div>
+            <div style="margin-top:auto;text-align:center;font-size:12px;opacity:.7;padding-top:18px">Emergency? Call <b>988</b> · Crisis &amp; Lifeline</div>
+          </div></div>
+        </div></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════════════════ 04 · COMMUNITY & PROFILE ════════════════════ -->
+  <section class="section" id="community">
+    <div class="section-head">
+      <span class="num">04</span>
+      <div><h2>Community &amp; Profile</h2><p>Belonging — shared stories, meetings, and a space that’s yours.</p></div>
+      <span class="hr"></span>
+    </div>
+
+    <div class="gallery">
+
+      <!-- 14. COMMUNITY FEED -->
+      <div class="device">
+        <div class="label"><b>Community</b><span>Feed</span></div>
+        <div class="phone"><div class="bezel-notch"></div><div class="screen">
+          <div class="status"><span>9:41</span><span class="sig">●●● 5G ▮</span></div>
+          <div class="body"><div class="pad" style="padding-top:8px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div class="greet"><small>Together</small><h1>Community</h1></div>
+              <div style="width:42px;height:42px;border-radius:50%;background:var(--sand);display:grid;place-items:center">🔍</div>
+            </div>
+            <div class="seg" style="margin-top:14px"><b class="on">For you</b><b>Milestones</b><b>Groups</b></div>
+
+            <div class="post" style="margin-top:14px">
+              <div class="ph"><img src="https://i.pravatar.cc/80?img=12" alt=""><div><b>Daniel R.</b><span>2h · 90 days 🎉</span></div></div>
+              <div style="font-size:13.5px;line-height:1.6;color:var(--ink)">Three months today. The mornings are the hardest but I keep showing up. Thank you all for being here.</div>
+              <div class="actions"><span>🤍 214</span><span>💬 38</span><span style="margin-left:auto">🌸 Celebrate</span></div>
+            </div>
+
+            <div class="post" style="margin-top:12px">
+              <div class="ph"><img src="https://i.pravatar.cc/80?img=32" alt=""><div><b>Priya S.</b><span>5h · Reflection</span></div></div>
+              <div style="font-size:13.5px;line-height:1.6;color:var(--ink)">What helped you most in your first week? Asking for a friend who just started day 1. 💛</div>
+              <div class="actions"><span>🤍 86</span><span>💬 51</span></div>
+            </div>
+          </div></div>
+          <div class="tabbar">
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5m5 14V9m5 10V7m5 12V11"/></svg>Progress</div>
+            <div class="tab center"><div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div></div>
+            <div class="tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Community</div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>Profile</div>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- 15. MEETINGS -->
+      <div class="device">
+        <div class="label"><b>Meetings</b><span>Groups &amp; sessions</span></div>
+        <div class="phone"><div class="bezel-notch"></div><div class="screen">
+          <div class="status"><span>9:41</span><span class="sig">●●● 5G ▮</span></div>
+          <div class="body"><div class="pad" style="padding-top:16px">
+            <div class="greet"><small>Find support</small><h1>Meetings</h1></div>
+            <div class="seg" style="margin-top:14px"><b class="on">Online</b><b>Near me</b></div>
+
+            <div class="card" style="margin-top:14px;border-color:var(--rose-soft);background:var(--rose-wash)">
+              <div style="display:flex;justify-content:space-between"><span class="pill" style="background:var(--rose);color:#fff">● Live now</span><span style="font-size:12px;color:var(--ink-soft);font-weight:700">18 here</span></div>
+              <div style="font-family:var(--font-display);font-size:18px;margin-top:12px;color:var(--charcoal)">Morning Serenity Circle</div>
+              <div style="font-size:12.5px;color:var(--ink-soft);margin-top:3px">Open share · Hosted by Lena M.</div>
+              <button class="btn btn-rose" style="width:100%;margin-top:14px">Join meeting</button>
+            </div>
+
+            <div class="soft-title" style="margin-top:20px">Later today</div>
+            <div class="card" style="margin-top:11px;padding:6px 18px">
+              <div class="listrow"><div class="ic" style="background:var(--sage-soft)">🧘</div><div class="tx"><b>Mindful Recovery</b><span>2:00 PM · 45 min</span></div><span style="color:var(--ink-faint)">›</span></div>
+              <div class="listrow"><div class="ic" style="background:#FBEAD2">☕</div><div class="tx"><b>Evening Check-In</b><span>7:30 PM · Open</span></div><span style="color:var(--ink-faint)">›</span></div>
+              <div class="listrow"><div class="ic" style="background:var(--rose-tint)">📖</div><div class="tx"><b>Step Study Group</b><span>9:00 PM · Step 4</span></div><span style="color:var(--ink-faint)">›</span></div>
+            </div>
+          </div></div>
+        </div></div>
+      </div>
+
+      <!-- 16. PROFILE -->
+      <div class="device">
+        <div class="label"><b>Profile</b><span>You</span></div>
+        <div class="phone"><div class="bezel-notch"></div><div class="screen">
+          <div class="status on-dark"><span>9:41</span><span class="sig">●●● 5G ▮</span></div>
+          <div class="body">
+            <div style="height:150px;background:radial-gradient(120% 130% at 50% -10%, var(--rose), var(--rose-deep));position:relative">
+              <div style="position:absolute;top:14px;right:20px;color:#fff;font-size:18px">⚙</div>
+            </div>
+            <div class="pad" style="margin-top:-58px">
+              <div style="text-align:center">
+                <img src="https://i.pravatar.cc/160?img=5" style="width:96px;height:96px;border-radius:50%;border:4px solid #fff;box-shadow:var(--shadow-sm)" alt="">
+                <div style="font-family:var(--font-display);font-size:23px;margin-top:10px;color:var(--charcoal)">Maya Thompson</div>
+                <div style="font-size:12.5px;color:var(--ink-soft)">Sober since 24 Feb 2026 · 🌸 100 days</div>
+              </div>
+              <div class="card" style="margin-top:18px;padding:6px 18px">
+                <div class="listrow"><div class="ic" style="background:var(--rose-tint)">🏅</div><div class="tx"><b>Milestones &amp; badges</b><span>3 earned</span></div><span style="color:var(--ink-faint)">›</span></div>
+                <div class="listrow"><div class="ic" style="background:var(--sage-soft)">📔</div><div class="tx"><b>My journal</b><span>48 entries</span></div><span style="color:var(--ink-faint)">›</span></div>
+                <div class="listrow"><div class="ic" style="background:#FBEAD2">🤝</div><div class="tx"><b>My support team</b><span>Sponsor · 2 buddies</span></div><span style="color:var(--ink-faint)">›</span></div>
+                <div class="listrow"><div class="ic" style="background:#EFE2DD">🎯</div><div class="tx"><b>Goals &amp; intentions</b><span>Edit your why</span></div><span style="color:var(--ink-faint)">›</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5m5 14V9m5 10V7m5 12V11"/></svg>Progress</div>
+            <div class="tab center"><div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Community</div>
+            <div class="tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>Profile</div>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- 17. SETTINGS -->
+      <div class="device">
+        <div class="label"><b>Settings</b><span>Preferences</span></div>
+        <div class="phone"><div class="bezel-notch"></div><div class="screen">
+          <div class="status"><span>9:41</span><span class="sig">●●● 5G ▮</span></div>
+          <div class="body"><div class="pad" style="padding-top:16px">
+            <div style="display:flex;align-items:center;gap:14px"><div style="font-size:22px;color:var(--ink-faint)">&larr;</div><h1 style="font-family:var(--font-display);font-weight:500;font-size:24px;margin:0;color:var(--charcoal)">Settings</h1></div>
+
+            <div class="soft-title" style="margin-top:20px">Account</div>
+            <div class="card" style="margin-top:11px;padding:6px 18px">
+              <div class="listrow"><div class="ic" style="background:var(--rose-tint)">👤</div><div class="tx"><b>Edit profile</b></div><span style="color:var(--ink-faint)">›</span></div>
+              <div class="listrow"><div class="ic" style="background:var(--sand)">🔒</div><div class="tx"><b>Privacy &amp; data</b></div><span style="color:var(--ink-faint)">›</span></div>
+            </div>
+
+            <div class="soft-title" style="margin-top:18px">Preferences</div>
+            <div class="card" style="margin-top:11px;padding:6px 18px">
+              <div class="listrow"><div class="ic" style="background:#FBEAD2">🔔</div><div class="tx"><b>Daily reminders</b><span>9:00 AM &amp; 8:00 PM</span></div>
+                <div style="width:42px;height:25px;border-radius:99px;background:var(--rose);position:relative"><span style="position:absolute;width:19px;height:19px;border-radius:50%;background:#fff;top:3px;right:3px"></span></div></div>
+              <div class="listrow"><div class="ic" style="background:var(--sage-soft)">🌙</div><div class="tx"><b>Calm mode</b><span>Dim &amp; quiet at night</span></div>
+                <div style="width:42px;height:25px;border-radius:99px;background:var(--sand);position:relative"><span style="position:absolute;width:19px;height:19px;border-radius:50%;background:#fff;top:3px;left:3px;box-shadow:var(--shadow-sm)"></span></div></div>
+              <div class="listrow"><div class="ic" style="background:#EFE2DD">🆘</div><div class="tx"><b>Emergency contacts</b><span>2 saved</span></div><span style="color:var(--ink-faint)">›</span></div>
+            </div>
+
+            <div class="soft-title" style="margin-top:18px">Support</div>
+            <div class="card" style="margin-top:11px;padding:6px 18px">
+              <div class="listrow"><div class="ic" style="background:var(--rose-tint)">❤️</div><div class="tx"><b>Crisis resources</b></div><span style="color:var(--ink-faint)">›</span></div>
+              <div class="listrow"><div class="ic" style="background:var(--sand)">↪</div><div class="tx" style="color:var(--rose-deep)"><b>Sign out</b></div></div>
+            </div>
+          </div></div>
+        </div></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════════════════ FOOTER ════════════════════ -->
+  <footer class="footer">
+    <svg class="lotus" viewBox="0 0 93 54" fill="var(--rose)"><use href="#lotus-mark"/></svg>
+    <div><b style="font-family:var(--font-display);color:var(--charcoal);letter-spacing:.16em">SHANTI</b> · Recovery Wellness</div>
+    <div style="margin-top:6px">Complete UI design · 17 screens across 4 flows · Palette &amp; lotus drawn from the brand logo</div>
+  </footer>
+
+</div>
+</body>
+</html>
